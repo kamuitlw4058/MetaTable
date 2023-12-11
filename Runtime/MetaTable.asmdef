@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "NPinyin",
-        ""
+        "LitJson",
+        "ClassGenerator"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

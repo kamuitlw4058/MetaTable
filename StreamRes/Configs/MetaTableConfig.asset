@@ -20,4 +20,24 @@ MonoBehaviour:
   - Config: {fileID: 11400000}
     TableName: AssetGroup
     Namespace: MetaTable
-    Columns: []
+    UsingNamespace:
+    - System
+    - System.IO
+    - System.Collections.Generic
+    - LitJson
+    - UnityEngine
+    - Sirenix.OdinInspector
+    - System.Xml.Serialization
+    Columns:
+    - Name: Uuid
+      Type: string
+      CnName: Uuid
+    - Name: Name
+      Type: string
+      CnName: Name
+    - Name: AssetGroup
+      Type: string
+      CnName: "\u8D44\u6E90\u7EC4"
+    - Name: Desc
+      Type: string
+      CnName: "\u8D44\u6E90\u7EC4\u63CF\u8FF0"
