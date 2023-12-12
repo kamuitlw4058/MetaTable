@@ -22,6 +22,19 @@ namespace MetaTable
         public MetaTableConfig Config;
 
 
+
+
+        // [ValueDropdown("GetNamespaces")]
+        [VerticalGroup("基本信息")]
+        [LabelText("命名空间")]
+        public string Namespace
+        {
+            get
+            {
+                return Config.Namespace;
+            }
+        }
+
         // [ReadOnly]
         [VerticalGroup("基本信息")]
         [LabelText("表名")]
@@ -29,28 +42,13 @@ namespace MetaTable
 
         public string TableName;
 
-        // [ValueDropdown("GetNamespaces")]
-        [VerticalGroup("基本信息")]
-        [LabelText("命名空间")]
-        public string Namespace;
-
-
-
-
-        // IEnumerable GetNamespaces()
-        // {
-        //     return GameSupportEditorUtility.GetNamespaces();
-
-        // }
 
         [VerticalGroup("表头编辑")]
         [LabelText("表头")]
         [TableList(AlwaysExpanded = true)]
         public List<MetaTableColumn> Columns = new List<MetaTableColumn>();
 
-        [Button("从Excel刷新列头")]
-        [BoxGroup("基本信息/操作")]
-        public void UpdateColumnsByExcel()
+        public void UpdateColumnsByExcel(bool replaceId2Uuid = false)
         {
             if (TableName.IsNullOrWhiteSpace() || Config == null)
             {
@@ -73,6 +71,27 @@ namespace MetaTable
             {
                 Columns = excelColumns;
             }
+
+            if (replaceId2Uuid)
+            {
+                foreach (var column in Columns)
+                {
+                    if (column.Name.Equals("Id"))
+                    {
+                        column.Name = "Uuid";
+                        column.Type = "string";
+                        column.CnName = "Uuid";
+                    }
+                }
+            }
+        }
+
+
+        [Button("从Excel刷新列头")]
+        [BoxGroup("基本信息/操作")]
+        public void UpdateColumnsByExcel()
+        {
+            UpdateColumnsByExcel(false);
         }
 
         [Button("生成脚本")]
@@ -163,7 +182,7 @@ namespace MetaTable
                 sw.WriteLine();
                 sw.WriteLine($"        public override MetaTableRow CloneRow()");
                 sw.WriteLine("        {");
-                sw.WriteLine($"           return CopyUtility.Clone<AssetGroupRow>(Row);");
+                sw.WriteLine($"           return CopyUtility.Clone<{classRowName}>(Row);");
                 sw.WriteLine("        }");
 
                 sw.WriteLine("#endif");

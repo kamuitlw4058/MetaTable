@@ -22,7 +22,7 @@ namespace MetaTable
         {
             get
             {
-                return Path.Join(ScriptMetaDir, "Generate").PathReplace();
+                return Path.Join(ScriptMetaDir, MetaTableName, "Generate").PathReplace();
             }
         }
 
@@ -31,7 +31,7 @@ namespace MetaTable
         {
             get
             {
-                return Path.Join(ScriptMetaDir, "Custom").PathReplace();
+                return Path.Join(ScriptMetaDir, MetaTableName, "Custom").PathReplace();
             }
         }
 

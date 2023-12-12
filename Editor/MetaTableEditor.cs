@@ -70,11 +70,11 @@ namespace MetaTable.Editor
             tree.Config.DrawSearchToolbar = true;
             tree.Config.AutoScrollOnSelectionChanged = false;
 
-            InitOverviews<AssetGroupOverview,
-                AssetGroupDetailRowWrapper,
-               AssetGroupRowWrapper,
-               AssetGroupNewRowWrapper,
-                UnityAssetGroupRow>(tree, "AssetGroup", "资源组");
+            // InitOverviews<AssetGroupOverview,
+            //     AssetGroupDetailRowWrapper,
+            //    AssetGroupRowWrapper,
+            //    AssetGroupNewRowWrapper,
+            //     UnityAssetGroupRow>(tree, "AssetGroup", "资源组");
 
             return tree;
         }
