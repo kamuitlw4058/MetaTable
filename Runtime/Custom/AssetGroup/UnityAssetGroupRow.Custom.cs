@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 
 namespace MetaTable
 {
-    public partial class UnityAssetGroupRow 
+    public partial class UnityAssetGroupRow
     {
 
     }

@@ -16,18 +16,19 @@ MonoBehaviour:
   PackageDir: Assets/Plugins/MetaTable
   ScriptDir: Runtime
   StreamResDir: StreamRes
+  UsingNamespace:
+  - System
+  - System.IO
+  - System.Collections.Generic
+  - LitJson
+  - UnityEngine
+  - Sirenix.OdinInspector
+  - System.Xml.Serialization
+  - Pangoo.Common
   Entries:
   - Config: {fileID: 11400000}
     TableName: AssetGroup
     Namespace: MetaTable
-    UsingNamespace:
-    - System
-    - System.IO
-    - System.Collections.Generic
-    - LitJson
-    - UnityEngine
-    - Sirenix.OdinInspector
-    - System.Xml.Serialization
     Columns:
     - Name: Uuid
       Type: string

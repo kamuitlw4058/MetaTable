@@ -63,7 +63,8 @@ namespace MetaTable
         }
 
         [FormerlySerializedAs("Headers")]
-        private List<string> UsingNamespace = new List<string>()
+        [LabelText("引用头文件")]
+        public List<string> UsingNamespace = new List<string>()
         {
             "System",
             "System.IO",

@@ -7,6 +7,10 @@ using LitJson;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using System.Xml.Serialization;
+using Pangoo.Common;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace MetaTable
 {
@@ -19,27 +23,45 @@ namespace MetaTable
         [TableList(AlwaysExpanded = true)]
         public List<UnityAssetGroupRow> Rows = new();
 
-        [Button("AddRow")]
-        public void AddRow()
-        {
-           RefreshRows();
-           var unityRow = AddRow<UnityAssetGroupRow>();
-           Rows.Add(unityRow);
-        }
-
         public override string TableName => "AssetGroup";
 
          public override IReadOnlyList<MetaTableUnityRow> UnityBaseRows => Rows;
-
-        public override void RefreshRows()
-        {
-           Rows = RefreshRows<UnityAssetGroupRow>();
-        }
 
         public override MetaTableBase ToTable()
         {
            return ToTable<AssetGroupTable>();
         }
+#if UNITY_EDITOR
+
+        public override void AddRow(MetaTableUnityRow unityRow)
+        {
+           AddRow<UnityAssetGroupRow>(unityRow);
+           Rows.Add(unityRow as UnityAssetGroupRow);
+        }
+
+        [Button("添加行")]
+        public void AddRow()
+        {
+           var unityRow = AddRow<UnityAssetGroupRow>();
+           Rows.Add(unityRow);
+        }
+
+        [Button("刷新行")]
+        public override void RefreshRows()
+        {
+           Rows = RefreshRows<UnityAssetGroupRow>();
+        }
+
+        public override void RemoveByUuid(string uuid)
+        {
+           for (int i = 0; i < Rows.Count; i++)
+           {
+               if (Rows[i].Row.Uuid.Equals(uuid)){
+                   Rows.Remove(Rows[i]);
+               }
+           }
+        }
+#endif
     }
 }
 

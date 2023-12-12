@@ -9,6 +9,12 @@ namespace MetaTable
 
         public abstract MetaTableRow BaseRow { get; }
 
+#if UNITY_EDITOR
+        public abstract void SetRow(MetaTableRow row);
+
+        public abstract MetaTableRow CloneRow();
+#endif
+
     }
 
 }

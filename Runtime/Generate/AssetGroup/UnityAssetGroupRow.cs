@@ -7,6 +7,7 @@ using LitJson;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using System.Xml.Serialization;
+using Pangoo.Common;
 
 namespace MetaTable
 {
@@ -18,7 +19,20 @@ namespace MetaTable
         [HideLabel]
         public AssetGroupRow Row = new();
 
-         public override MetaTableRow BaseRow => Row;
+        public override MetaTableRow BaseRow => Row;
+
+#if UNITY_EDITOR
+
+        public override void SetRow(MetaTableRow row)
+        {
+           Row = row as AssetGroupRow;
+        }
+
+        public override MetaTableRow CloneRow()
+        {
+           return CopyUtility.Clone<AssetGroupRow>(Row);
+        }
+#endif
     }
 }
 

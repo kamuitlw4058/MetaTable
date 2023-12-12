@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a56ab0272b31ed4598ea4c7d3c6884e, type: 3}
-  m_Name: 70afcf452d9d4990a3f8301b3a64074d
+  m_Name: a4c1da32bcd34752bb1043170485bc2a
   m_EditorClassIdentifier: 
   Row:
-    Uuid: 70afcf452d9d4990a3f8301b3a64074d
-    Name: 
+    Uuid: a4c1da32bcd34752bb1043170485bc2a
+    Name: "\u6D4B\u8BD52"
     AssetGroup: 
     Desc: 

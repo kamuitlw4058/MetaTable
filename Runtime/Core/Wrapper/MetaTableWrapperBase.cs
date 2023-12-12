@@ -1,0 +1,128 @@
+#if UNITY_EDITOR
+using UnityEditor;
+using Sirenix.OdinInspector.Editor;
+using Sirenix.OdinInspector;
+using Pangoo.Common;
+using UnityEngine;
+
+namespace MetaTable
+{
+    public class MetaTableWrapperBase<TOverview, TRow> where TOverview : MetaTableOverview where TRow : MetaTableUnityRow, new()
+    {
+        OdinMenuEditorWindow m_MenuWindow;
+
+        public OdinMenuEditorWindow MenuWindow
+        {
+            get
+            {
+                return m_MenuWindow;
+            }
+            set
+            {
+                m_MenuWindow = value;
+            }
+        }
+
+        public bool OutsideNeedRefresh { get; set; }
+        public virtual bool CanNameChange
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+
+        protected TOverview m_Overview;
+
+        public virtual TOverview Overview
+        {
+            get
+            {
+                return m_Overview;
+            }
+            set
+            {
+                m_Overview = value;
+            }
+        }
+
+        protected TRow m_UnityRow;
+
+        public TRow UnityRow
+        {
+            get
+            {
+                return m_UnityRow;
+            }
+            set
+            {
+                m_UnityRow = value;
+            }
+        }
+
+
+
+        [ShowInInspector]
+        [TableColumnWidth(100, resizable: false)]
+        [TableTitleGroup("命名空间")]
+        [PropertyOrder(-3)]
+        [HideLabel]
+        public string Namespace
+        {
+            get
+            {
+                return m_Overview?.Config?.Namespace;
+            }
+        }
+
+        [ShowInInspector]
+        [TableColumnWidth(100, resizable: false)]
+        [PropertyOrder(-2)]
+        [DelayedProperty]
+        public virtual string Uuid
+        {
+            get
+            {
+                // Debug.Log($"Log:{m_Row}");
+                return m_UnityRow.BaseRow.Uuid;
+            }
+        }
+
+
+
+        [ShowInInspector]
+        [PropertyOrder(-1)]
+        [EnableIf("CanNameChange")]
+        [DelayedProperty]
+        [InfoBox("已经有对应的名字", InfoMessageType.Warning, "CheckExistsName")]
+        public virtual string Name
+        {
+            get
+            {
+                return m_UnityRow.BaseRow.Name;
+            }
+            set
+            {
+                m_UnityRow.BaseRow.Name = value;
+            }
+        }
+
+        protected virtual bool CheckExistsName()
+        {
+            return false;
+        }
+
+
+
+        public virtual void Save()
+        {
+            EditorUtility.SetDirty(m_Overview);
+            AssetDatabase.SaveAssets();
+
+            OutsideNeedRefresh = true;
+        }
+    }
+}
+
+#endif

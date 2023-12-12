@@ -1,13 +1,12 @@
 {
-    "name": "MetaTable",
+    "name": "MetaTable.Editor",
     "rootNamespace": "",
     "references": [
-        "NPinyin",
-        "LitJson",
-        "ClassGenerator",
-        "Pangoo.Common"
+        "GUID:57c90a09c4360424987b734589ec045d"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

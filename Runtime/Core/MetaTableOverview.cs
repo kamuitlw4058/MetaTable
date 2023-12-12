@@ -2,6 +2,8 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
+
 
 
 #if UNITY_EDITOR
@@ -75,21 +77,27 @@ namespace MetaTable
         [Button("生成运行时表")]
         public abstract MetaTableBase ToTable();
 
-        [Button("AddRow")]
-        public T AddRow<T>() where T : MetaTableUnityRow
-        {
-            var unityRow = ScriptableObject.CreateInstance<T>();
-            var newUuid = UuidUtility.GetNewUuid();
-            unityRow.BaseRow.Uuid = newUuid;
-            DirectoryUtility.ExistsOrCreate(RowDirPath);
-            string dest = RowPath(newUuid);
-            AssetDatabase.CreateAsset(unityRow, dest);
-            AssetDatabase.SaveAssets();
-            return unityRow;
-        }
-
 
 #if UNITY_EDITOR
+        public abstract void AddRow(MetaTableUnityRow unityRow);
+
+
+        public T AddRow<T>(MetaTableUnityRow unityRow = null) where T : MetaTableUnityRow
+        {
+            if (unityRow == null)
+            {
+                unityRow = ScriptableObject.CreateInstance<T>();
+                var newUuid = UuidUtility.GetNewUuid();
+                unityRow.BaseRow.Uuid = newUuid;
+            }
+
+            DirectoryUtility.ExistsOrCreate(RowDirPath);
+            string dest = RowPath(unityRow.BaseRow.Uuid);
+            AssetDatabase.CreateAsset(unityRow, dest);
+            AssetDatabase.SaveAssets();
+            return unityRow as T;
+        }
+
 
         public abstract void RefreshRows();
 
@@ -104,6 +112,10 @@ namespace MetaTable
             }
             return ret;
         }
+
+        public abstract void RemoveByUuid(string uuid);
+
+
 #endif
     }
 }

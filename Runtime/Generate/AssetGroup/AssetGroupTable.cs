@@ -7,6 +7,7 @@ using LitJson;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using System.Xml.Serialization;
+using Pangoo.Common;
 
 namespace MetaTable
 {
