@@ -22,8 +22,12 @@ namespace MetaTable
 
         private static OdinEditorWindow m_CreateWindow;
 
+        public MetaTableDetailRowWrapper<TOverview, TRow> DetailWrapper { get; set; }
+
 
         [Button("复制")]
+        [TableTitleGroup("复制")]
+
         [TableColumnWidth(60, resizable: false)]
         // [ShowIf("@this.ShowEditor")]
         public void Copy()
@@ -49,15 +53,18 @@ namespace MetaTable
 
 
         [Button("编辑")]
+        [TableTitleGroup("编辑")]
+
         [TableColumnWidth(60, resizable: false)]
         // [ShowIf("@this.ShowEditor")]
-        public void Editor()
+        public void Edit()
         {
-            MenuWindow?.TrySelectMenuItemWithObject(UnityRow);
+            MenuWindow?.TrySelectMenuItemWithObject(DetailWrapper);
         }
 
-
         [Button("删除")]
+        [TableTitleGroup("删除")]
+
         [TableColumnWidth(60, resizable: false)]
         public void Remove()
         {

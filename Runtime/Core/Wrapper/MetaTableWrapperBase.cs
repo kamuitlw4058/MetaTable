@@ -49,6 +49,13 @@ namespace MetaTable
 
         protected TRow m_UnityRow;
 
+        [ShowInInspector]
+        [TableTitleGroup("引用")]
+        [TableColumnWidth(80, resizable: false)]
+        [PropertyOrder(-3)]
+        [ReadOnly]
+        [HideLabel]
+
         public TRow UnityRow
         {
             get
@@ -66,7 +73,7 @@ namespace MetaTable
         [ShowInInspector]
         [TableColumnWidth(100, resizable: false)]
         [TableTitleGroup("命名空间")]
-        [PropertyOrder(-3)]
+        [PropertyOrder(-4)]
         [HideLabel]
         public string Namespace
         {
@@ -77,9 +84,12 @@ namespace MetaTable
         }
 
         [ShowInInspector]
-        [TableColumnWidth(100, resizable: false)]
+        [TableColumnWidth(120, resizable: false)]
         [PropertyOrder(-2)]
+        [PropertyTooltip("$Uuid")]
         [DelayedProperty]
+        [InfoBox("已经有对应的Uuid", InfoMessageType.Warning, "CheckExistsUuid")]
+
         public virtual string Uuid
         {
             get
@@ -90,11 +100,11 @@ namespace MetaTable
         }
 
 
-
         [ShowInInspector]
         [PropertyOrder(-1)]
         [EnableIf("CanNameChange")]
         [DelayedProperty]
+        // [TableTitleGroup("名字")]
         [InfoBox("已经有对应的名字", InfoMessageType.Warning, "CheckExistsName")]
         public virtual string Name
         {
@@ -108,11 +118,6 @@ namespace MetaTable
             }
         }
 
-        protected virtual bool CheckExistsName()
-        {
-            return false;
-        }
-
 
 
         public virtual void Save()
@@ -122,6 +127,19 @@ namespace MetaTable
 
             OutsideNeedRefresh = true;
         }
+
+        protected virtual bool CheckExistsUuid()
+        {
+            return false;
+        }
+
+
+
+        protected virtual bool CheckExistsName()
+        {
+            return false;
+        }
+
     }
 }
 

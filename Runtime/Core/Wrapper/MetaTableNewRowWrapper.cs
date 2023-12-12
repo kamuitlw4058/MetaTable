@@ -19,7 +19,7 @@ namespace MetaTable
         public override bool CanNameChange => true;
         public Action<string> AfterCreate;
 
-        protected bool CheckExistsUuid()
+        protected override bool CheckExistsUuid()
         {
             return OverviewUtility.ExistsOverviewUuid<TOverview>(Uuid);
         }

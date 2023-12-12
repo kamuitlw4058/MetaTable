@@ -41,9 +41,9 @@ namespace MetaTable.Editor
             SirenixEditorGUI.EndHorizontalToolbar();
         }
 
-        void InitOverviews<TOverview, TTableRowWrapper, TNewRowWrapper, TRow>(OdinMenuTree tree, string menuMainKey, string menuDisplayName)
+        void InitOverviews<TOverview, TDetailRowWrapper, TTableRowWrapper, TNewRowWrapper, TRow>(OdinMenuTree tree, string menuMainKey, string menuDisplayName)
             where TOverview : MetaTableOverview
-            // where TRowDetailWrapper : ExcelTableRowDetailWrapper<TOverview, TRow>, new()
+            where TDetailRowWrapper : MetaTableDetailRowWrapper<TOverview, TRow>, new()
             where TTableRowWrapper : MetaTableRowWrapper<TOverview, TNewRowWrapper, TRow>, new()
             where TNewRowWrapper : MetaTableNewRowWrapper<TOverview, TRow>, new()
             where TRow : MetaTableUnityRow, new()
@@ -51,19 +51,17 @@ namespace MetaTable.Editor
             var overviews = AssetDatabaseUtility.FindAsset<TOverview>().ToList();
             // var overviewEditor = new OverviewEditorBase<TOverview, TRowDetailWrapper, TTableRowWrapper, TNewRowWrapper, TRow>();
             var overviewEditor = new OverviewEditorBase<TOverview,
-                                  //  TRowDetailWrapper,
+                                   TDetailRowWrapper,
                                   TTableRowWrapper,
                                    TNewRowWrapper,
                                     TRow>();
 
             overviewEditor.Overviews = overviews;
             overviewEditor.MenuWindow = this;
-            // overviewEditor.MenuKey = menuMainKey;
             overviewEditor.MenuDisplayName = menuDisplayName;
             overviewEditor.Tree = tree;
             overviewEditor.InitWrappers();
             tree.Add(menuDisplayName, overviewEditor);
-
         }
 
         protected override OdinMenuTree BuildMenuTree()
@@ -73,8 +71,9 @@ namespace MetaTable.Editor
             tree.Config.AutoScrollOnSelectionChanged = false;
 
             InitOverviews<AssetGroupOverview,
-               MetaTableRowWrapper<AssetGroupOverview, MetaTableNewRowWrapper<AssetGroupOverview, UnityAssetGroupRow>, UnityAssetGroupRow>,
-               MetaTableNewRowWrapper<AssetGroupOverview, UnityAssetGroupRow>,
+                AssetGroupDetailRowWrapper,
+               AssetGroupRowWrapper,
+               AssetGroupNewRowWrapper,
                 UnityAssetGroupRow>(tree, "AssetGroup", "资源组");
 
             return tree;

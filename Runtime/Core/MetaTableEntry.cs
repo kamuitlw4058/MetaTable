@@ -2,12 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 using Sirenix.OdinInspector;
-using UnityEngine;
-using UnityEngine.Serialization;
-using Sirenix.Utilities;
 using ClassGenerator;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Logical;
-
 
 
 #if UNITY_EDITOR
@@ -116,7 +111,16 @@ namespace MetaTable
             var unityRowName = $"Unity{classBaseName}Row";
             GeneratorUnityRow(classBaseName, unityRowName, classGenerateDir, rowName);
 
-            GeneratorOverview(classBaseName, classGenerateDir, unityRowName, codeTableName);
+            var codeOverviewName = $"{classBaseName}Overview";
+            GeneratorOverview(classBaseName, codeOverviewName, unityRowName, codeTableName);
+
+            var newRowWrapperName = $"{classBaseName}NewRowWrapper";
+            GeneratorNewRowWrapper(classBaseName, codeOverviewName, unityRowName, newRowWrapperName);
+
+            var detailRowWrapperName = $"{classBaseName}DetailRowWrapper";
+            GeneratorDetailRowWrapper(classBaseName, codeOverviewName, unityRowName, detailRowWrapperName);
+
+            GeneratorRowWrapper(classBaseName, codeOverviewName, unityRowName, newRowWrapperName);
 
             AssetDatabase.Refresh();
         }
@@ -178,9 +182,9 @@ namespace MetaTable
         }
 
 
-        public void GeneratorOverview(string classBaseName, string classGenerateDir, string codeUnityRowName, string codeTableName)
+        public void GeneratorOverview(string classBaseName, string codeOverviewName, string codeUnityRowName, string codeTableName)
         {
-            var codeOverviewName = $"{classBaseName}Overview";
+            var classGenerateDir = Path.Join(Config.ScriptGenerateDir, classBaseName);
             var codeOverviewPath = Path.Join(classGenerateDir, $"{codeOverviewName}.cs");
             JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace, (config, sw) =>
             {
@@ -249,6 +253,35 @@ namespace MetaTable
             }), codeOverviewName, codeOverviewPath, isUseUnityEditor: true, baseClass: "MetaTableOverview", isAddCreateAssetMenu: true, assetMenuPrefix: "MetaTable");
 
         }
+
+
+        public void GeneratorNewRowWrapper(string classBaseName, string overviewName, string unityRowName, string newRowWrapperName)
+        {
+            var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
+            var path = Path.Join(classCustomDir, $"{newRowWrapperName}.cs");
+
+            JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+             newRowWrapperName, path, baseClass: $"MetaTableNewRowWrapper<{overviewName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
+        }
+
+        public void GeneratorDetailRowWrapper(string classBaseName, string overviewName, string unityRowName, string detailRowWrapperName)
+        {
+            var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
+            var path = Path.Join(classCustomDir, $"{detailRowWrapperName}.cs");
+
+            JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+             detailRowWrapperName, path, baseClass: $"MetaTableDetailRowWrapper<{overviewName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
+        }
+
+        public void GeneratorRowWrapper(string classBaseName, string overviewName, string unityRowName, string newRowWrapperName)
+        {
+            var rowWrapperName = $"{classBaseName}RowWrapper";
+            var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
+            var rowWrapperPath = Path.Join(classCustomDir, $"{rowWrapperName}.cs");
+            JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+             rowWrapperName, rowWrapperPath, baseClass: $"MetaTableRowWrapper<{overviewName},{newRowWrapperName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
+        }
+
 
 
 

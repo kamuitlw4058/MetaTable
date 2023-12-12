@@ -19,6 +19,7 @@ namespace MetaTable
             m_AdditionFunction = additionFunction;
         }
 
+
         public override void WriteFileStart(IJsonClassGeneratorConfig config, TextWriter sw)
         {
             if (config.IsWriteFileHeader)
@@ -27,6 +28,11 @@ namespace MetaTable
                 {
                     sw.WriteLine("// " + line);
                 }
+            }
+
+            if (config.IsTotalEditor)
+            {
+                sw.WriteLine($"#if UNITY_EDITOR");
             }
 
 
@@ -41,14 +47,32 @@ namespace MetaTable
 
             if (config.IsUseUnityEditor)
             {
-                sw.WriteLine($"#if UNITY_EDITOR");
+                if (!config.IsTotalEditor)
+                {
+                    sw.WriteLine($"#if UNITY_EDITOR");
+                }
+
                 sw.WriteLine($"using UnityEditor;");
-                sw.WriteLine($"#endif");
+                if (!config.IsTotalEditor)
+                {
+                    sw.WriteLine($"#endif");
+                }
             }
 
             if (ShouldApplyNoPruneAttribute(config) || ShouldApplyNoRenamingAttribute(config))
                 sw.WriteLine("using System.Reflection;");
         }
+
+        public override void WriteFileEnd(IJsonClassGeneratorConfig config, TextWriter sw)
+        {
+            sw.WriteLine("    }");
+            sw.WriteLine("}");
+            if (config.IsTotalEditor)
+            {
+                sw.WriteLine($"#endif");
+            }
+        }
+
 
         public override void WriteMainClassStart(IJsonClassGeneratorConfig config, TextWriter sw)
         {

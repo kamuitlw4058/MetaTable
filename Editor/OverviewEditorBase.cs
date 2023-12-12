@@ -10,7 +10,8 @@ using MetaTable;
 
 namespace MetaTable.Editor
 {
-    public class OverviewEditorBase<TOverview, TTableRowWrapper, TNewRowWrapper, TRow>
+    public class OverviewEditorBase<TOverview, TDetalRowRrapper, TTableRowWrapper, TNewRowWrapper, TRow>
+            where TDetalRowRrapper : MetaTableDetailRowWrapper<TOverview, TRow>, new()
             where TTableRowWrapper : MetaTableRowWrapper<TOverview, TNewRowWrapper, TRow>, new()
             where TNewRowWrapper : MetaTableNewRowWrapper<TOverview, TRow>, new()
             where TOverview : MetaTableOverview
@@ -74,14 +75,15 @@ namespace MetaTable.Editor
 
                 m_AllWrappers.AddRange(overview.UnityBaseRows.Select(x =>
                 {
-                    // var detailWrapper = new TRowDetailWrapper();
-                    // detailWrapper.Overview = overview;
-                    // detailWrapper.Row = x as TRow;
+                    var detailWrapper = new TDetalRowRrapper();
+                    detailWrapper.Overview = overview;
+                    detailWrapper.UnityRow = x as TRow;
 
                     var wrapper = new TTableRowWrapper();
                     wrapper.Overview = overview;
                     wrapper.UnityRow = x as TRow;
                     wrapper.MenuWindow = MenuWindow;
+                    wrapper.DetailWrapper = detailWrapper;
                     // wrapper.OnRemove += OnWrapperRemove;
                     return wrapper;
                 }).ToList());
@@ -89,8 +91,8 @@ namespace MetaTable.Editor
 
             foreach (var wrapper in m_AllWrappers)
             {
-                var itemMenuKey = wrapper.UnityRow.BaseRow.Uuid;
-                var customMenuItem = new OdinMenuItem(Tree, wrapper.UnityRow.BaseRow.Uuid, wrapper.UnityRow);
+                var itemMenuKey = $"{wrapper.UnityRow.BaseRow.Uuid.Substring(0, 5)}-{wrapper.UnityRow.BaseRow.Name}";
+                var customMenuItem = new OdinMenuItem(Tree, wrapper.UnityRow.BaseRow.Uuid, wrapper.DetailWrapper);
                 MenuItemDict.Add(itemMenuKey, customMenuItem);
                 Tree.AddMenuItemAtPath(MenuDisplayName, customMenuItem);
             }
