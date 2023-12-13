@@ -1,8 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
 using Sirenix.OdinInspector;
 using ClassGenerator;
+using UnityEngine;
 
 
 #if UNITY_EDITOR
@@ -16,12 +18,22 @@ namespace MetaTable
     [Serializable]
     public class MetaTableEntry
     {
+        public enum MetaTableTypeEnum
+        {
+            Define,
+            Reference
+        }
+
+
         [ReadOnly]
         [VerticalGroup("基本信息")]
         [LabelText("配置")]
         public MetaTableConfig Config;
 
 
+        [VerticalGroup("基本信息")]
+        [LabelText("表类型")]
+        public MetaTableTypeEnum MetaTableType;
 
 
         // [ValueDropdown("GetNamespaces")]
@@ -39,12 +51,53 @@ namespace MetaTable
         [VerticalGroup("基本信息")]
         [LabelText("表名")]
         [TableColumnWidth(240, resizable: false)]
-
+        [ShowIf("MetaTableType", MetaTableTypeEnum.Define)]
         public string TableName;
 
+        [VerticalGroup("内容编辑")]
+        [LabelText("引用配置")]
+        [ShowIf("MetaTableType", MetaTableTypeEnum.Reference)]
+        [ValueDropdown("OnRefConfigDropdown")]
+        public MetaTableConfig RefConfig;
 
-        [VerticalGroup("表头编辑")]
+        IEnumerable OnRefConfigDropdown()
+        {
+            ValueDropdownList<MetaTableConfig> list = new ValueDropdownList<MetaTableConfig>();
+            var assets = AssetDatabaseUtility.FindAsset<MetaTableConfig>();
+            foreach (var asset in assets)
+            {
+                list.Add($"{asset.Namespace}", asset);
+
+
+            }
+            return list;
+        }
+
+        [VerticalGroup("内容编辑")]
+        [LabelText("引用表名")]
+        [ShowIf("MetaTableType", MetaTableTypeEnum.Reference)]
+        [ValueDropdown("OnRefTableNameDropdown")]
+        public string RefTableName;
+
+        IEnumerable OnRefTableNameDropdown()
+        {
+            ValueDropdownList<string> list = new();
+            if (RefConfig != null && RefConfig.Entries.Count > 0)
+            {
+                foreach (var entry in RefConfig.Entries)
+                {
+                    list.Add(entry.BaseName);
+                }
+            }
+
+            return list;
+        }
+
+
+        [VerticalGroup("内容编辑")]
         [LabelText("表头")]
+        [ShowIf("MetaTableType", MetaTableTypeEnum.Define)]
+
         [TableList(AlwaysExpanded = true)]
         public List<MetaTableColumn> Columns = new List<MetaTableColumn>();
 
@@ -89,13 +142,21 @@ namespace MetaTable
 
         [Button("从Excel刷新列头")]
         [BoxGroup("基本信息/操作")]
+        [EnableIf("MetaTableType", MetaTableTypeEnum.Define)]
         public void UpdateColumnsByExcel()
         {
             UpdateColumnsByExcel(false);
         }
 
+        public string BaseName => NameUtility.ToTitleCase(TableName);
+
+        public string OverviewName => $"{BaseName}Overview";
+
+        #region 生成脚本
         [Button("生成脚本")]
         [BoxGroup("基本信息/操作")]
+        [EnableIf("MetaTableType", MetaTableTypeEnum.Define)]
+
         public void GeneratorCode()
         {
             if (Columns.Count == 0 || Config == null)
@@ -300,10 +361,48 @@ namespace MetaTable
             JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
              rowWrapperName, rowWrapperPath, baseClass: $"MetaTableRowWrapper<{overviewName},{newRowWrapperName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
         }
+        #endregion
 
 
+        [Button("生成Overview")]
+        [BoxGroup("基本信息/操作")]
+        public void GenerateOverview()
+        {
+            if (MetaTableType == MetaTableTypeEnum.Define)
+            {
+                var path = Path.Join(Config.StreamResScriptableObjectDir, $"{OverviewName}.asset");
+                if (!File.Exists(path))
+                {
+                    var overview = ScriptableObject.CreateInstance($"{Namespace}.{OverviewName}") as MetaTableOverview;
+                    if (overview != null)
+                    {
+                        overview.Config = Config;
+                        AssetDatabase.CreateAsset(overview, path);
+                        AssetDatabase.Refresh();
+                    }
+                }
 
+            }
+            else if (MetaTableType == MetaTableTypeEnum.Reference)
+            {
+                if (RefConfig != null && !RefTableName.IsNullOrWhiteSpace())
+                {
+                    var RefOverviewName = $"{RefTableName}Overview";
+                    var path = Path.Join(Config.StreamResScriptableObjectDir, $"{RefOverviewName}.asset");
+                    if (!File.Exists(path))
+                    {
+                        var overview = ScriptableObject.CreateInstance($"{RefConfig.Namespace}.{RefOverviewName}") as MetaTableOverview;
+                        if (overview != null)
+                        {
+                            overview.Config = Config;
+                            AssetDatabase.CreateAsset(overview, path);
+                            AssetDatabase.Refresh();
+                        }
+                    }
 
+                }
+            }
+        }
 
 
     }
