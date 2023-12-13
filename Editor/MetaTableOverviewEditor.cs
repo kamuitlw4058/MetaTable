@@ -10,7 +10,7 @@ using MetaTable;
 
 namespace MetaTable.Editor
 {
-    public class OverviewEditorBase<TOverview, TDetalRowRrapper, TTableRowWrapper, TNewRowWrapper, TRow>
+    public class MetaTableOverviewEditor<TOverview, TDetalRowRrapper, TTableRowWrapper, TNewRowWrapper, TRow>
             where TDetalRowRrapper : MetaTableDetailRowWrapper<TOverview, TRow>, new()
             where TTableRowWrapper : MetaTableRowWrapper<TOverview, TNewRowWrapper, TRow>, new()
             where TNewRowWrapper : MetaTableNewRowWrapper<TOverview, TRow>, new()
@@ -91,8 +91,9 @@ namespace MetaTable.Editor
 
             foreach (var wrapper in m_AllWrappers)
             {
-                var itemMenuKey = $"{wrapper.UnityRow.BaseRow.Uuid.Substring(0, 5)}-{wrapper.UnityRow.BaseRow.Name}";
-                var customMenuItem = new OdinMenuItem(Tree, wrapper.UnityRow.BaseRow.Uuid, wrapper.DetailWrapper);
+                var itemMenuKey = wrapper.Uuid;
+                var itemDisplayName = $"{wrapper.Uuid.Substring(0, 8)}-{wrapper.Name}";
+                var customMenuItem = new OdinMenuItem(Tree, itemDisplayName, wrapper.DetailWrapper);
                 MenuItemDict.Add(itemMenuKey, customMenuItem);
                 Tree.AddMenuItemAtPath(MenuDisplayName, customMenuItem);
             }

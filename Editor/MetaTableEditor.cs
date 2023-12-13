@@ -50,7 +50,7 @@ namespace MetaTable.Editor
         {
             var overviews = AssetDatabaseUtility.FindAsset<TOverview>().ToList();
             // var overviewEditor = new OverviewEditorBase<TOverview, TRowDetailWrapper, TTableRowWrapper, TNewRowWrapper, TRow>();
-            var overviewEditor = new OverviewEditorBase<TOverview,
+            var overviewEditor = new MetaTableOverviewEditor<TOverview,
                                    TDetailRowWrapper,
                                   TTableRowWrapper,
                                    TNewRowWrapper,
