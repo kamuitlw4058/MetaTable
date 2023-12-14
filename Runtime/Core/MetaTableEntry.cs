@@ -5,6 +5,8 @@ using System;
 using Sirenix.OdinInspector;
 using ClassGenerator;
 using UnityEngine;
+using Pangoo.Common;
+
 
 
 #if UNITY_EDITOR
@@ -119,7 +121,7 @@ namespace MetaTable
                 return;
             }
 
-            var excelColumns = ExcelHelper.ParserEPPlus(excelFilePath);
+            var excelColumns = ExcelHelper.ParserEPPlusColumns(excelFilePath);
             if (excelColumns != null)
             {
                 Columns = excelColumns;
@@ -142,7 +144,7 @@ namespace MetaTable
 
         [Button("从Excel刷新列头")]
         [BoxGroup("基本信息/操作")]
-        [EnableIf("MetaTableType", MetaTableTypeEnum.Define)]
+        [ShowIf("MetaTableType", MetaTableTypeEnum.Define)]
         public void UpdateColumnsByExcel()
         {
             UpdateColumnsByExcel(false);
@@ -155,7 +157,7 @@ namespace MetaTable
         #region 生成脚本
         [Button("生成脚本")]
         [BoxGroup("基本信息/操作")]
-        [EnableIf("MetaTableType", MetaTableTypeEnum.Define)]
+        [ShowIf("MetaTableType", MetaTableTypeEnum.Define)]
 
         public void GeneratorCode()
         {
@@ -192,7 +194,7 @@ namespace MetaTable
             GeneratorUnityRow(classBaseName, unityRowName, classGenerateDir, rowName);
 
             var codeOverviewName = $"{classBaseName}Overview";
-            GeneratorOverview(classBaseName, codeOverviewName, unityRowName, codeTableName);
+            GeneratorOverview(classBaseName, codeOverviewName, unityRowName, rowName, codeTableName);
 
             var newRowWrapperName = $"{classBaseName}NewRowWrapper";
             GeneratorNewRowWrapper(classBaseName, codeOverviewName, unityRowName, newRowWrapperName);
@@ -262,7 +264,7 @@ namespace MetaTable
         }
 
 
-        public void GeneratorOverview(string classBaseName, string codeOverviewName, string codeUnityRowName, string codeTableName)
+        public void GeneratorOverview(string classBaseName, string codeOverviewName, string codeUnityRowName, string rowName, string codeTableName)
         {
             var classGenerateDir = Path.Join(Config.ScriptGenerateDir, classBaseName);
             var codeOverviewPath = Path.Join(classGenerateDir, $"{codeOverviewName}.cs");
@@ -296,6 +298,15 @@ namespace MetaTable
                 sw.WriteLine("        {");
                 sw.WriteLine($"           AddRow<{codeUnityRowName}>(unityRow);");
                 sw.WriteLine($"           Rows.Add(unityRow as {codeUnityRowName});");
+                sw.WriteLine("        }");
+
+
+                sw.WriteLine();
+                sw.WriteLine($"        public override void AddBaseRow(MetaTableRow row)");
+                sw.WriteLine("        {");
+                sw.WriteLine($"           var unityRow = ScriptableObject.CreateInstance<{codeUnityRowName}>();");
+                sw.WriteLine($"           unityRow.Row = row as {rowName};");
+                sw.WriteLine($"           AddRow<{codeUnityRowName}>(unityRow);");
                 sw.WriteLine("        }");
 
 
@@ -403,7 +414,62 @@ namespace MetaTable
                 }
             }
         }
+#if UNITY_EDITOR
 
+        [Button("从Excel刷新Overview")]
+        [BoxGroup("基本信息/操作")]
+        public void RefreshOverview()
+        {
+            // Config.StreamResExcelDir
+            if (RefConfig != null && !RefTableName.IsNullOrWhiteSpace())
+            {
+                var RefOverviewName = $"{RefTableName}Overview";
+                var RefRowName = $"{RefTableName}Row";
+
+                var path = Path.Join(Config.StreamResScriptableObjectDir, $"{RefOverviewName}.asset");
+
+                if (File.Exists(path))
+                {
+                    var overviewTypeFullName = $"{RefConfig.Namespace}.{RefOverviewName}";
+                    var overviewType = AssemblyUtility.GetType(overviewTypeFullName);
+                    if (overviewType == null)
+                    {
+                        Debug.Log($"overviewType is null:{overviewTypeFullName}");
+                        return;
+                    }
+                    MetaTableOverview overview = AssetDatabase.LoadAssetAtPath(path, overviewType) as MetaTableOverview;
+                    if (overview == null)
+                    {
+                        Debug.Log($"overview is null. at:{path}");
+                        return;
+                    }
+
+                    var excelPath = Path.Join(Config.StreamResExcelDir, $"{RefTableName}.xlsx").PathReplace();
+                    if (!File.Exists(excelPath))
+                    {
+                        Debug.Log($"excelPath is not Exists :{excelPath}");
+                        return;
+                    }
+                    var rowTypeFullName = $"{RefConfig.Namespace}.{RefRowName}";
+                    var rowType = AssemblyUtility.GetType(rowTypeFullName);
+                    if (rowType == null)
+                    {
+                        Debug.Log($"rowType is null:{rowTypeFullName}");
+                        return;
+                    }
+
+                    var rows = ExcelHelper.LoadFromExcelFile(excelPath, rowType);
+                    Debug.Log($"rows:{rows} count:{rows.Count}");
+
+                    foreach (var row in rows)
+                    {
+                        overview.AddBaseRow(row);
+                    }
+
+                }
+            }
+        }
+#endif
 
     }
 }

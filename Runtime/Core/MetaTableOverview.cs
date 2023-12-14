@@ -81,6 +81,8 @@ namespace MetaTable
 #if UNITY_EDITOR
         public abstract void AddRow(MetaTableUnityRow unityRow);
 
+        public abstract void AddBaseRow(MetaTableRow row);
+
 
         public T AddRow<T>(MetaTableUnityRow unityRow = null) where T : MetaTableUnityRow
         {
