@@ -123,6 +123,7 @@ namespace MetaTable
         public virtual void Save()
         {
             EditorUtility.SetDirty(m_Overview);
+            EditorUtility.SetDirty(m_UnityRow);
             AssetDatabase.SaveAssets();
 
             OutsideNeedRefresh = true;

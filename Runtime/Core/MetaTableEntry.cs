@@ -182,10 +182,7 @@ namespace MetaTable
             {
                 return;
             }
-
-
-            var codeRowPath = Path.Join(classGenerateDir, $"{rowName}.cs");
-            JsonClassGenerator.GeneratorCodeString(rowJson, Namespace, new CSharpCodeRowWriter(Config.UsingNamespace, Columns), rowName, codeRowPath, baseClass: "MetaTableRow", baseFields: new string[] { "Uuid", "Name" });
+            GenerateRow(classGenerateDir, rowName, rowJson, classBaseName);
 
             var codeTableName = $"{classBaseName}Table";
             GeneratorTable(codeTableName, classGenerateDir, rowName);
@@ -206,6 +203,23 @@ namespace MetaTable
 
             AssetDatabase.Refresh();
         }
+        public void GenerateRow(string classGenerateDir, string rowName, string rowJson, string baseName)
+        {
+            //Generator
+            var codeRowPath = Path.Join(classGenerateDir, $"{rowName}.cs");
+            JsonClassGenerator.GeneratorCodeString(rowJson, Namespace, new CSharpCodeRowWriter(Config.UsingNamespace, Columns), rowName, codeRowPath, baseClass: "MetaTableRow", baseFields: new string[] { "Uuid", "Name" });
+
+            // Custom Code
+            var classCustomDir = Path.Join(Config.ScriptCustomDir, baseName);
+            DirectoryUtility.ExistsOrCreate(classCustomDir);
+            var codeRowCustomPath = Path.Join(classCustomDir, $"{rowName}.Custom.cs");
+            if (!File.Exists(codeRowCustomPath))
+            {
+                JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace), rowName, codeRowCustomPath, isSerializable: false, isWriteFileHeader: false);
+            }
+        }
+
+
 
         public void GeneratorTable(string codeTableName, string classGenerateDir, string classRowName)
         {
@@ -350,18 +364,22 @@ namespace MetaTable
         {
             var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
             var path = Path.Join(classCustomDir, $"{newRowWrapperName}.cs");
-
-            JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
-             newRowWrapperName, path, baseClass: $"MetaTableNewRowWrapper<{overviewName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
+            if (!File.Exists(path))
+            {
+                JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+                 newRowWrapperName, path, baseClass: $"MetaTableNewRowWrapper<{overviewName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
+            }
         }
 
         public void GeneratorDetailRowWrapper(string classBaseName, string overviewName, string unityRowName, string detailRowWrapperName)
         {
             var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
             var path = Path.Join(classCustomDir, $"{detailRowWrapperName}.cs");
-
-            JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
-             detailRowWrapperName, path, baseClass: $"MetaTableDetailRowWrapper<{overviewName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
+            if (!File.Exists(path))
+            {
+                JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+                 detailRowWrapperName, path, baseClass: $"MetaTableDetailRowWrapper<{overviewName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
+            }
         }
 
         public void GeneratorRowWrapper(string classBaseName, string overviewName, string unityRowName, string newRowWrapperName)
@@ -369,8 +387,11 @@ namespace MetaTable
             var rowWrapperName = $"{classBaseName}RowWrapper";
             var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
             var rowWrapperPath = Path.Join(classCustomDir, $"{rowWrapperName}.cs");
-            JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
-             rowWrapperName, rowWrapperPath, baseClass: $"MetaTableRowWrapper<{overviewName},{newRowWrapperName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
+            if (!File.Exists(rowWrapperPath))
+            {
+                JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+                 rowWrapperName, rowWrapperPath, baseClass: $"MetaTableRowWrapper<{overviewName},{newRowWrapperName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
+            }
         }
         #endregion
 
