@@ -199,7 +199,10 @@ namespace MetaTable
             var detailRowWrapperName = $"{classBaseName}DetailRowWrapper";
             GeneratorDetailRowWrapper(classBaseName, codeOverviewName, unityRowName, detailRowWrapperName);
 
+            // var newRowWrapperName = $"{classBaseName}RowWrapper";
             GeneratorRowWrapper(classBaseName, codeOverviewName, unityRowName, newRowWrapperName);
+
+            GeneratorOverviewWrapper(classBaseName, codeOverviewName, unityRowName);
 
             AssetDatabase.Refresh();
         }
@@ -391,6 +394,18 @@ namespace MetaTable
             {
                 JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
                  rowWrapperName, rowWrapperPath, baseClass: $"MetaTableRowWrapper<{overviewName},{newRowWrapperName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
+            }
+        }
+
+        public void GeneratorOverviewWrapper(string classBaseName, string overviewName, string unityRowName)
+        {
+            var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
+            var overviewWrapperName = $"{classBaseName}OverviewWrapper";
+            var overviewWrapperPath = Path.Join(classCustomDir, $"{overviewWrapperName}.cs");
+            if (!File.Exists(overviewWrapperPath))
+            {
+                JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+                 overviewWrapperName, overviewWrapperPath, baseClass: $"MetaTableOverviewWrapper<{overviewName},{classBaseName}DetailRowWrapper,{classBaseName}RowWrapper,{classBaseName}NewRowWrapper,{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
             }
         }
         #endregion
