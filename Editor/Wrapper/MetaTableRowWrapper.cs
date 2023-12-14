@@ -4,10 +4,9 @@ using UnityEditor;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector;
 using Pangoo.Common;
-using Pangoo;
 using UnityEngine;
 
-namespace MetaTable
+namespace MetaTable.Editor
 {
     public class MetaTableRowWrapper<TOverview, TNewRowWrapper, TRow> : MetaTableWrapperBase<TOverview, TRow>
              where TOverview : MetaTableOverview

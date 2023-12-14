@@ -17,12 +17,29 @@ namespace MetaTable
             }
         }
 
+        public string EditorMetaDir
+        {
+            get
+            {
+                return Path.Join(PackageDir, EditorDir).PathReplace();
+            }
+        }
+
         [ShowInInspector]
         public string ScriptGenerateDir
         {
             get
             {
                 return Path.Join(ScriptMetaDir, MetaTableName, "Generate").PathReplace();
+            }
+        }
+
+        [ShowInInspector]
+        public string EditorCustomDir
+        {
+            get
+            {
+                return Path.Join(EditorMetaDir, MetaTableName, "Custom").PathReplace();
             }
         }
 

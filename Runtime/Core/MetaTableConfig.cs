@@ -29,13 +29,17 @@ namespace MetaTable
         public string PackageDir;
 
 
-        [LabelText("脚本目录")]
+        [LabelText("运行时目录")]
         public string ScriptDir = "Runtime";
+
+
+        [LabelText("编辑器目录")]
+        public string EditorDir = "Editor";
 
         [LabelText("资源包目录")]
         public string StreamResDir = "StreamRes";
 
-
+#if UNITY_EDITOR
         public void GuessPackageDir()
         {
             var path = AssetDatabase.GetAssetPath(this);
@@ -53,6 +57,7 @@ namespace MetaTable
 
             PackageDir = PackageDir.PathReplace();
         }
+#endif
 
         public void GuessScriptDir()
         {
@@ -95,7 +100,7 @@ namespace MetaTable
                 entry.Config = this;
             }
         }
-
+#if UNITY_EDITOR
         [Button("初始化目录")]
         public void InitDirs()
         {
@@ -108,75 +113,6 @@ namespace MetaTable
         }
 
 
-        // [Button("刷新Excel列表", 30)]
-        // void Refresh()
-        // {
-        //     if (PackConfig == null)
-        //     {
-        //         Debug.LogError("Load Config Failed!");
-        //         return;
-        //     }
-
-        //     InitDirInfo();
-        //     ExcelList.Clear();
-        //     DirInfo.NameSpace = PackConfig.MainNamespace;
-        //     var files = Directory.GetFiles(DirInfo.ExcelDir, "*.xlsx");
-        //     var pangooList = new List<string>();
-        //     foreach (var filePath in files)
-        //     {
-        //         var regularFilePath = filePath.Replace("\\", "/");
-        //         var fileName = Path.GetFileNameWithoutExtension(regularFilePath);
-        //         if (!fileName.StartsWith("~"))
-        //         {
-        //             if (ExcelList.Find(o => o.ExcelName == fileName) == null)
-        //             {
-        //                 var namesapce = string.Empty;
-        //                 var IsPangooTable = false;
-        //                 if (GameSupportEditorUtility.GetExcelTableNameInPangoo(fileName) && PackConfig.MainNamespace != "Pangoo")
-        //                 {
-        //                     namesapce = "Pangoo";
-        //                     IsPangooTable = true;
-        //                     pangooList.Add(GameSupportEditorUtility.GetExcelTablePangooTableName(fileName));
-        //                 }
-
-        //                 if (PackConfig.MainNamespace == "Pangoo")
-        //                 {
-        //                     IsPangooTable = true;
-        //                 }
-
-        //                 ExcelList.Add(new ExcelEntry()
-        //                 {
-        //                     ExcelName = fileName,
-        //                     BaseNamespace = namesapce,
-        //                     IsPangooTable = IsPangooTable,
-        //                     Named = true,
-        //                 });
-        //             }
-
-        //         }
-        //     }
-
-        //     if (PackConfig.MainNamespace != "Pangoo")
-        //     {
-        //         GameSupportEditorUtility.GetExcelTablePangooTableNames().ForEach(o =>
-        //         {
-        //             if (!pangooList.Contains(o))
-        //             {
-        //                 ExcelList.Add(new ExcelEntry()
-        //                 {
-        //                     ExcelName = o.Substring(7, o.Length - (5 + 7)),
-        //                     BaseNamespace = "Pangoo",
-        //                     IsPangooTable = true,
-        //                     Named = true,
-        //                 });
-        //             }
-        //         });
-        //     }
-
-
-
-
-        // }
 
 
         [Button("从Excel刷新列头")]
@@ -227,7 +163,6 @@ namespace MetaTable
             // }
         }
 
-#if UNITY_EDITOR
         [Button("保存配置", 30)]
         public void SaveConfig()
         {

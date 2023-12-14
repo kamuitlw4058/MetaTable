@@ -2,7 +2,8 @@
     "name": "MetaTable.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:57c90a09c4360424987b734589ec045d"
+        "GUID:57c90a09c4360424987b734589ec045d",
+        "GUID:e661b1f563bd2ce4ea63fa6862343c5e"
     ],
     "includePlatforms": [
         "Editor"

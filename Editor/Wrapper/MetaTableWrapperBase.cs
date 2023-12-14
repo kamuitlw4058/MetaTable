@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using Pangoo.Common;
 using UnityEngine;
 
-namespace MetaTable
+namespace MetaTable.Editor
 {
     public class MetaTableWrapperBase<TOverview, TRow> where TOverview : MetaTableOverview where TRow : MetaTableUnityRow, new()
     {

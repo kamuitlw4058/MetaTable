@@ -8,7 +8,7 @@ using Sirenix.OdinInspector.Editor;
 using MetaTable;
 
 
-namespace MetaTable
+namespace MetaTable.Editor
 {
     public class MetaTableOverviewWrapper<TOverview, TDetalRowRrapper, TTableRowWrapper, TNewRowWrapper, TRow>
             where TDetalRowRrapper : MetaTableDetailRowWrapper<TOverview, TRow>, new()

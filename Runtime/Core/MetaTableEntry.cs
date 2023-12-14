@@ -62,6 +62,7 @@ namespace MetaTable
         [ValueDropdown("OnRefConfigDropdown")]
         public MetaTableConfig RefConfig;
 
+#if UNITY_EDITOR
         IEnumerable OnRefConfigDropdown()
         {
             ValueDropdownList<MetaTableConfig> list = new ValueDropdownList<MetaTableConfig>();
@@ -74,6 +75,7 @@ namespace MetaTable
             }
             return list;
         }
+#endif
 
         [VerticalGroup("内容编辑")]
         [LabelText("引用表名")]
@@ -102,7 +104,7 @@ namespace MetaTable
 
         [TableList(AlwaysExpanded = true)]
         public List<MetaTableColumn> Columns = new List<MetaTableColumn>();
-
+#if UNITY_EDITOR
         public void UpdateColumnsByExcel(bool replaceId2Uuid = false)
         {
             if (TableName.IsNullOrWhiteSpace() || Config == null)
@@ -150,10 +152,12 @@ namespace MetaTable
             UpdateColumnsByExcel(false);
         }
 
+#endif
+
         public string BaseName => NameUtility.ToTitleCase(TableName);
 
         public string OverviewName => $"{BaseName}Overview";
-
+#if UNITY_EDITOR
         #region 生成脚本
         [Button("生成脚本")]
         [BoxGroup("基本信息/操作")]
@@ -362,25 +366,24 @@ namespace MetaTable
 
         }
 
-
         public void GeneratorNewRowWrapper(string classBaseName, string overviewName, string unityRowName, string newRowWrapperName)
         {
-            var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
+            var classCustomDir = Path.Join(Config.EditorCustomDir, classBaseName);
             var path = Path.Join(classCustomDir, $"{newRowWrapperName}.cs");
             if (!File.Exists(path))
             {
-                JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+                JsonClassGenerator.GeneratorCodeString("{}", $"{Namespace}.Editor", new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
                  newRowWrapperName, path, baseClass: $"MetaTableNewRowWrapper<{overviewName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
             }
         }
 
         public void GeneratorDetailRowWrapper(string classBaseName, string overviewName, string unityRowName, string detailRowWrapperName)
         {
-            var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
+            var classCustomDir = Path.Join(Config.EditorCustomDir, classBaseName);
             var path = Path.Join(classCustomDir, $"{detailRowWrapperName}.cs");
             if (!File.Exists(path))
             {
-                JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+                JsonClassGenerator.GeneratorCodeString("{}", $"{Namespace}.Editor", new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
                  detailRowWrapperName, path, baseClass: $"MetaTableDetailRowWrapper<{overviewName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
             }
         }
@@ -388,23 +391,23 @@ namespace MetaTable
         public void GeneratorRowWrapper(string classBaseName, string overviewName, string unityRowName, string newRowWrapperName)
         {
             var rowWrapperName = $"{classBaseName}RowWrapper";
-            var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
+            var classCustomDir = Path.Join(Config.EditorCustomDir, classBaseName);
             var rowWrapperPath = Path.Join(classCustomDir, $"{rowWrapperName}.cs");
             if (!File.Exists(rowWrapperPath))
             {
-                JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+                JsonClassGenerator.GeneratorCodeString("{}", $"{Namespace}.Editor", new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
                  rowWrapperName, rowWrapperPath, baseClass: $"MetaTableRowWrapper<{overviewName},{newRowWrapperName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
             }
         }
 
         public void GeneratorOverviewWrapper(string classBaseName, string overviewName, string unityRowName)
         {
-            var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
+            var classCustomDir = Path.Join(Config.EditorCustomDir, classBaseName);
             var overviewWrapperName = $"{classBaseName}OverviewWrapper";
             var overviewWrapperPath = Path.Join(classCustomDir, $"{overviewWrapperName}.cs");
             if (!File.Exists(overviewWrapperPath))
             {
-                JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+                JsonClassGenerator.GeneratorCodeString("{}", $"{Namespace}.Editor", new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
                  overviewWrapperName, overviewWrapperPath, baseClass: $"MetaTableOverviewWrapper<{overviewName},{classBaseName}DetailRowWrapper,{classBaseName}RowWrapper,{classBaseName}NewRowWrapper,{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
             }
         }
@@ -450,7 +453,6 @@ namespace MetaTable
                 }
             }
         }
-#if UNITY_EDITOR
 
         [Button("从Excel刷新Overview")]
         [BoxGroup("基本信息/操作")]

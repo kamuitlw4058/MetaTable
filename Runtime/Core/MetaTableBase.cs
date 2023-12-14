@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using LitJson;
 using Sirenix.Utilities;
+using System.Linq;
 
 #if UNITY_EDITOR
 using System.Reflection;
-using System.Linq;
 using OfficeOpenXml;
 using UnityEditor;
 #endif

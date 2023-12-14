@@ -9,7 +9,7 @@ using UnityEditor;
 using Sirenix.OdinInspector.Editor;
 
 
-namespace MetaTable
+namespace MetaTable.Editor
 {
     public class MetaTableDetailRowWrapper<TOverview, TRow> : MetaTableWrapperBase<TOverview, TRow>
                         where TOverview : MetaTableOverview
