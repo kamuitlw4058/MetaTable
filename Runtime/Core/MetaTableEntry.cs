@@ -332,6 +332,23 @@ namespace MetaTable
 
 
                 sw.WriteLine();
+                sw.WriteLine($"        public override void UpdateRow(string uuid, MetaTableRow baseRow)");
+                sw.WriteLine("        {");
+                sw.WriteLine($"           foreach (var row in Rows)");
+                sw.WriteLine("            {");
+                sw.WriteLine($"               if (row.Uuid.Equals(uuid))");
+                sw.WriteLine("                {");
+                sw.WriteLine($"                   row.Row = baseRow as {rowName};");
+                sw.WriteLine($"                   row.Row.Uuid = uuid;");
+                sw.WriteLine($"                   return;");
+                sw.WriteLine("                }");
+                sw.WriteLine("            }");
+                sw.WriteLine("        }");
+
+
+
+
+                sw.WriteLine();
                 sw.WriteLine("        [Button(\"添加行\")]");
                 sw.WriteLine($"        public void AddRow()");
                 sw.WriteLine("        {");
@@ -502,6 +519,70 @@ namespace MetaTable
                     foreach (var row in rows)
                     {
                         overview.AddBaseRow(row);
+                    }
+
+                }
+            }
+        }
+
+        [Button("从Excel刷新Overview检测Name")]
+        [BoxGroup("基本信息/操作")]
+        public void RefreshOverviewCheckName()
+        {
+            // Config.StreamResExcelDir
+            if (RefConfig != null && !RefTableName.IsNullOrWhiteSpace())
+            {
+                var RefOverviewName = $"{RefTableName}Overview";
+                var RefRowName = $"{RefTableName}Row";
+
+                var path = Path.Join(Config.StreamResScriptableObjectDir, $"{RefOverviewName}.asset");
+
+                if (File.Exists(path))
+                {
+                    var overviewTypeFullName = $"{RefConfig.Namespace}.{RefOverviewName}";
+                    var overviewType = AssemblyUtility.GetType(overviewTypeFullName);
+                    if (overviewType == null)
+                    {
+                        Debug.Log($"overviewType is null:{overviewTypeFullName}");
+                        return;
+                    }
+                    MetaTableOverview overview = AssetDatabase.LoadAssetAtPath(path, overviewType) as MetaTableOverview;
+                    if (overview == null)
+                    {
+                        Debug.Log($"overview is null. at:{path}");
+                        return;
+                    }
+
+                    var excelPath = Path.Join(Config.StreamResExcelDir, $"{RefTableName}.xlsx").PathReplace();
+                    if (!File.Exists(excelPath))
+                    {
+                        Debug.Log($"excelPath is not Exists :{excelPath}");
+                        return;
+                    }
+                    var rowTypeFullName = $"{RefConfig.Namespace}.{RefRowName}";
+                    var rowType = AssemblyUtility.GetType(rowTypeFullName);
+                    if (rowType == null)
+                    {
+                        Debug.Log($"rowType is null:{rowTypeFullName}");
+                        return;
+                    }
+
+                    var rows = ExcelHelper.LoadFromExcelFile(excelPath, rowType);
+                    Debug.Log($"rows:{rows} count:{rows.Count}");
+
+                    foreach (var row in rows)
+                    {
+
+                        var overviewRow = overview.GetBaseRowByName(row.Name);
+                        if (overviewRow == null)
+                        {
+                            overview.AddBaseRow(row);
+                        }
+                        else
+                        {
+                            overview.UpdateRow(overviewRow.Uuid, row);
+                        }
+
                     }
 
                 }

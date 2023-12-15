@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 using System.IO;
+using UnityEngine.PlayerLoop;
+using System.Data;
+
+
 
 #if UNITY_EDITOR
 
@@ -66,6 +70,38 @@ namespace MetaTable
             }
         }
 
+        public MetaTableRow GetBaseRowByName(string name)
+        {
+            if (name.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+            foreach (var unityRow in UnityBaseRows)
+            {
+                if (name.Equals(unityRow.Name))
+                {
+                    return unityRow.BaseRow;
+                }
+            }
+            return null;
+        }
+
+        public MetaTableRow GetBaseRowByUuid(string uuid)
+        {
+            if (uuid.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+            foreach (var unityRow in UnityBaseRows)
+            {
+                if (name.Equals(unityRow.Name))
+                {
+                    return unityRow.BaseRow;
+                }
+            }
+            return null;
+        }
+
         public T ToTable<T>() where T : MetaTableBase, new()
         {
             T table = new T();
@@ -81,6 +117,8 @@ namespace MetaTable
         public abstract void AddRow(MetaTableUnityRow unityRow);
 
         public abstract void AddBaseRow(MetaTableRow row);
+
+        public abstract void UpdateRow(string uuid, MetaTableRow row);
 
 
         public T AddRow<T>(MetaTableUnityRow unityRow = null) where T : MetaTableUnityRow
