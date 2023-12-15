@@ -6,10 +6,9 @@ using UnityEngine;
 using System;
 
 using UnityEditor;
-using Sirenix.OdinInspector.Editor;
 
 
-namespace MetaTable.Editor
+namespace MetaTable
 {
     public class MetaTableDetailRowWrapper<TOverview, TRow> : MetaTableWrapperBase<TOverview, TRow>
                         where TOverview : MetaTableOverview

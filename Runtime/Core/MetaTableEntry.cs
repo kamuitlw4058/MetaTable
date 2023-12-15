@@ -368,22 +368,22 @@ namespace MetaTable
 
         public void GeneratorNewRowWrapper(string classBaseName, string overviewName, string unityRowName, string newRowWrapperName)
         {
-            var classCustomDir = Path.Join(Config.EditorCustomDir, classBaseName);
+            var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
             var path = Path.Join(classCustomDir, $"{newRowWrapperName}.cs");
             if (!File.Exists(path))
             {
-                JsonClassGenerator.GeneratorCodeString("{}", $"{Namespace}.Editor", new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+                JsonClassGenerator.GeneratorCodeString("{}", $"{Namespace}", new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
                  newRowWrapperName, path, baseClass: $"MetaTableNewRowWrapper<{overviewName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
             }
         }
 
         public void GeneratorDetailRowWrapper(string classBaseName, string overviewName, string unityRowName, string detailRowWrapperName)
         {
-            var classCustomDir = Path.Join(Config.EditorCustomDir, classBaseName);
+            var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
             var path = Path.Join(classCustomDir, $"{detailRowWrapperName}.cs");
             if (!File.Exists(path))
             {
-                JsonClassGenerator.GeneratorCodeString("{}", $"{Namespace}.Editor", new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+                JsonClassGenerator.GeneratorCodeString("{}", $"{Namespace}", new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
                  detailRowWrapperName, path, baseClass: $"MetaTableDetailRowWrapper<{overviewName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
             }
         }
@@ -391,23 +391,23 @@ namespace MetaTable
         public void GeneratorRowWrapper(string classBaseName, string overviewName, string unityRowName, string newRowWrapperName)
         {
             var rowWrapperName = $"{classBaseName}RowWrapper";
-            var classCustomDir = Path.Join(Config.EditorCustomDir, classBaseName);
+            var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
             var rowWrapperPath = Path.Join(classCustomDir, $"{rowWrapperName}.cs");
             if (!File.Exists(rowWrapperPath))
             {
-                JsonClassGenerator.GeneratorCodeString("{}", $"{Namespace}.Editor", new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+                JsonClassGenerator.GeneratorCodeString("{}", $"{Namespace}", new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
                  rowWrapperName, rowWrapperPath, baseClass: $"MetaTableRowWrapper<{overviewName},{newRowWrapperName},{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
             }
         }
 
         public void GeneratorOverviewWrapper(string classBaseName, string overviewName, string unityRowName)
         {
-            var classCustomDir = Path.Join(Config.EditorCustomDir, classBaseName);
+            var classCustomDir = Path.Join(Config.ScriptCustomDir, classBaseName);
             var overviewWrapperName = $"{classBaseName}OverviewWrapper";
             var overviewWrapperPath = Path.Join(classCustomDir, $"{overviewWrapperName}.cs");
             if (!File.Exists(overviewWrapperPath))
             {
-                JsonClassGenerator.GeneratorCodeString("{}", $"{Namespace}.Editor", new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
+                JsonClassGenerator.GeneratorCodeString("{}", $"{Namespace}", new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace),
                  overviewWrapperName, overviewWrapperPath, baseClass: $"MetaTableOverviewWrapper<{overviewName},{classBaseName}DetailRowWrapper,{classBaseName}RowWrapper,{classBaseName}NewRowWrapper,{unityRowName}>", isTotalEditor: true, isWriteFileHeader: false);
             }
         }

@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using Pangoo.Common;
 using UnityEngine;
 
-namespace MetaTable.Editor
+namespace MetaTable
 {
     public class MetaTableWrapperBase<TOverview, TRow> where TOverview : MetaTableOverview where TRow : MetaTableUnityRow, new()
     {
@@ -118,7 +118,7 @@ namespace MetaTable.Editor
             }
         }
 
-
+#if UNITY_EDITOR
 
         public virtual void Save()
         {
@@ -128,6 +128,7 @@ namespace MetaTable.Editor
 
             OutsideNeedRefresh = true;
         }
+#endif
 
         protected virtual bool CheckExistsUuid()
         {

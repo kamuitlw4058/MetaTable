@@ -1,14 +1,13 @@
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 
-
 using MetaTable;
 
-
-namespace MetaTable.Editor
+namespace MetaTable
 {
     public class MetaTableOverviewWrapper<TOverview, TDetalRowRrapper, TTableRowWrapper, TNewRowWrapper, TRow>
             where TDetalRowRrapper : MetaTableDetailRowWrapper<TOverview, TRow>, new()
@@ -102,3 +101,4 @@ namespace MetaTable.Editor
 
     }
 }
+#endif
