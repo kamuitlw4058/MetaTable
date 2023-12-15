@@ -313,6 +313,19 @@ namespace MetaTable
                 sw.WriteLine("        }");
 
                 sw.WriteLine("#if UNITY_EDITOR");
+                sw.WriteLine();
+                sw.WriteLine($"         public override void RemoveRow(string uuid)");
+                sw.WriteLine("        {");
+
+                sw.WriteLine($"           var unityRow = GetUnityRowByName(uuid) as {codeUnityRowName};");
+                sw.WriteLine("            if(unityRow == null)");
+                sw.WriteLine("            {");
+                sw.WriteLine("                 Rows.Remove(unityRow);");
+                sw.WriteLine("                 AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(unityRow));");
+                sw.WriteLine("            }");
+                sw.WriteLine("        }");
+
+
 
                 sw.WriteLine();
                 sw.WriteLine($"        public override void AddRow(MetaTableUnityRow unityRow)");
@@ -328,6 +341,7 @@ namespace MetaTable
                 sw.WriteLine($"           var unityRow = ScriptableObject.CreateInstance<{codeUnityRowName}>();");
                 sw.WriteLine($"           unityRow.Row = row as {rowName};");
                 sw.WriteLine($"           AddRow<{codeUnityRowName}>(unityRow);");
+                sw.WriteLine($"           Rows.Add(unityRow);");
                 sw.WriteLine("        }");
 
 
@@ -518,7 +532,18 @@ namespace MetaTable
 
                     foreach (var row in rows)
                     {
-                        overview.AddBaseRow(row);
+                        var unityRow = overview.GetUnityRowByUuid(row.Uuid);
+                        if (unityRow != null)
+                        {
+                            Debug.Log($"Update uuid:{row.Uuid} BaseRow:{row}");
+                            overview.UpdateRow(row.Uuid, row);
+                        }
+                        else
+                        {
+                            Debug.Log($"Add BaseRow:{row}");
+                            overview.AddBaseRow(row);
+                        }
+
                     }
 
                 }
@@ -576,15 +601,59 @@ namespace MetaTable
                         var overviewRow = overview.GetBaseRowByName(row.Name);
                         if (overviewRow == null)
                         {
+                            Debug.Log($"Add BaseRow:{row}");
                             overview.AddBaseRow(row);
                         }
                         else
                         {
+                            Debug.Log($"Update uuid:{overviewRow.Uuid} BaseRow:{row}");
                             overview.UpdateRow(overviewRow.Uuid, row);
                         }
 
                     }
 
+                }
+            }
+        }
+        [Button("去掉重复Name")]
+        [BoxGroup("基本信息/操作")]
+        public void DropDupName()
+        {
+            if (RefConfig != null && !RefTableName.IsNullOrWhiteSpace())
+            {
+                var RefOverviewName = $"{RefTableName}Overview";
+                var RefRowName = $"{RefTableName}Row";
+
+                var path = Path.Join(Config.StreamResScriptableObjectDir, $"{RefOverviewName}.asset");
+
+                if (File.Exists(path))
+                {
+                    var overviewTypeFullName = $"{RefConfig.Namespace}.{RefOverviewName}";
+                    var overviewType = AssemblyUtility.GetType(overviewTypeFullName);
+                    if (overviewType == null)
+                    {
+                        Debug.Log($"overviewType is null:{overviewTypeFullName}");
+                        return;
+                    }
+                    MetaTableOverview overview = AssetDatabase.LoadAssetAtPath(path, overviewType) as MetaTableOverview;
+                    if (overview == null)
+                    {
+                        Debug.Log($"overview is null. at:{path}");
+                        return;
+                    }
+                    List<string> Names = new List<string>();
+
+                    foreach (var unityRow in overview.BaseRows)
+                    {
+                        if (!Names.Contains(unityRow.Name))
+                        {
+                            Names.Add(unityRow.Name);
+                        }
+                        else
+                        {
+                            overview.RemoveByUuid(unityRow.Uuid);
+                        }
+                    }
                 }
             }
         }

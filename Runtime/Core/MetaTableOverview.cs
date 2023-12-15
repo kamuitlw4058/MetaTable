@@ -102,6 +102,38 @@ namespace MetaTable
             return null;
         }
 
+        public MetaTableUnityRow GetUnityRowByName(string name)
+        {
+            if (name.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+            foreach (var unityRow in UnityBaseRows)
+            {
+                if (name.Equals(unityRow.Name))
+                {
+                    return unityRow;
+                }
+            }
+            return null;
+        }
+
+        public MetaTableUnityRow GetUnityRowByUuid(string uuid)
+        {
+            if (uuid.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+            foreach (var unityRow in UnityBaseRows)
+            {
+                if (name.Equals(unityRow.Name))
+                {
+                    return unityRow;
+                }
+            }
+            return null;
+        }
+
         public T ToTable<T>() where T : MetaTableBase, new()
         {
             T table = new T();
@@ -114,6 +146,8 @@ namespace MetaTable
 
 
 #if UNITY_EDITOR
+        public abstract void RemoveRow(string uuid);
+
         public abstract void AddRow(MetaTableUnityRow unityRow);
 
         public abstract void AddBaseRow(MetaTableRow row);

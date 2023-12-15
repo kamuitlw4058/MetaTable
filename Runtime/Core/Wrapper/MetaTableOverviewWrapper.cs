@@ -53,6 +53,7 @@ namespace MetaTable
         [TableList(IsReadOnly = true, AlwaysExpanded = true), ShowInInspector]
 
         [LabelText("行数据")]
+        [Searchable]
         public readonly List<TTableRowWrapper> m_AllWrappers = new List<TTableRowWrapper>();
 
         private Dictionary<string, OdinMenuItem> MenuItemDict = new Dictionary<string, OdinMenuItem>();
