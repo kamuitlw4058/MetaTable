@@ -139,28 +139,14 @@ namespace MetaTable
                 }
             }
 
-
-            // if (TableName.IsNullOrWhiteSpace() || Config == null)
-            // {
-            //     return;
-            // }
-
-
-            // TableName = NameUtility.ToTitleCase(TableName);
-
-
-
-            // var excelFilePath = Path.Join(Config.StreamResExcelDir, $"{TableName}.xlsx").PathReplace();
-            // if (!File.Exists(excelFilePath))
-            // {
-            //     return;
-            // }
-
-            // var excelColumns = ExcelHelper.ParserEPPlus(excelFilePath);
-            // if (excelColumns != null)
-            // {
-            //     Columns = excelColumns;
-            // }
+        }
+        [Button("生成代码")]
+        public void GenerateCode()
+        {
+            foreach (var entry in Entries)
+            {
+                entry.GeneratorCode();
+            }
         }
 
         [Button("保存配置", 30)]

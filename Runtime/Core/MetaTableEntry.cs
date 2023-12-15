@@ -318,7 +318,7 @@ namespace MetaTable
                 sw.WriteLine("        {");
 
                 sw.WriteLine($"           var unityRow = GetUnityRowByName(uuid) as {codeUnityRowName};");
-                sw.WriteLine("            if(unityRow == null)");
+                sw.WriteLine("            if(unityRow != null)");
                 sw.WriteLine("            {");
                 sw.WriteLine("                 Rows.Remove(unityRow);");
                 sw.WriteLine("                 AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(unityRow));");
