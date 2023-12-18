@@ -19,6 +19,16 @@ namespace MetaTable
         [MetaTableRowColumn("Name", "string", "名字", 0)]
         public string Name;
 
+
+        public string UuidShort
+        {
+            get
+            {
+                return Uuid?.Substring(0, 8);
+            }
+        }
+
+
     }
 
 }

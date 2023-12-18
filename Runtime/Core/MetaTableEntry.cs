@@ -189,7 +189,7 @@ namespace MetaTable
             GenerateRow(classGenerateDir, rowName, rowJson, classBaseName);
 
             var codeTableName = $"{classBaseName}Table";
-            GeneratorTable(codeTableName, classGenerateDir, rowName);
+            GeneratorTable(codeTableName, classGenerateDir, rowName, classBaseName);
 
             var unityRowName = $"Unity{classBaseName}Row";
             GeneratorUnityRow(classBaseName, unityRowName, classGenerateDir, rowName);
@@ -228,7 +228,7 @@ namespace MetaTable
 
 
 
-        public void GeneratorTable(string codeTableName, string classGenerateDir, string classRowName)
+        public void GeneratorTable(string codeTableName, string classGenerateDir, string classRowName, string classBaseName)
         {
             var codeTablePath = Path.Join(classGenerateDir, $"{codeTableName}.cs");
             JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace, (config, sw) =>
@@ -237,6 +237,10 @@ namespace MetaTable
                 sw.WriteLine("        {");
                 sw.WriteLine($"            return GetRowByUuid<{classRowName}>(uuid);");
                 sw.WriteLine("        }");
+
+
+                sw.WriteLine($"        public override string TableName => \"{classBaseName}\";");
+
             }), codeTableName, codeTablePath, baseClass: "MetaTableBase");
         }
 

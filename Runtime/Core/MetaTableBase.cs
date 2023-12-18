@@ -23,6 +23,9 @@ namespace MetaTable
     {
         public int Priority = 0;
 
+        public abstract string TableName { get; }
+
+
         [ShowInInspector]
         public Dictionary<string, MetaTableRow> Dict = new Dictionary<string, MetaTableRow>();
 
@@ -47,6 +50,18 @@ namespace MetaTable
                 }
                 Dict.Add(o.Uuid, o);
             });
+        }
+
+
+        public void MergeRows(IReadOnlyList<MetaTableRow> rows)
+        {
+            for (int i = 0; i < rows.Count; i++)
+            {
+                if (!Dict.ContainsKey(rows[i].Uuid))
+                {
+                    Dict.Add(rows[i].Uuid, rows[i]);
+                }
+            }
         }
 
         public T GetRowByUuid<T>(string uuid) where T : MetaTableRow
