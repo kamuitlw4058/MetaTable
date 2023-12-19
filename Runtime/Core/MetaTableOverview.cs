@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 using System.IO;
+using System.Collections;
 using UnityEngine.PlayerLoop;
 using System.Data;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
+
 
 
 
@@ -153,6 +156,47 @@ namespace MetaTable
         public abstract void AddBaseRow(MetaTableRow row);
 
         public abstract void UpdateRow(string uuid, MetaTableRow row);
+
+
+
+        public static IEnumerable GetUuidDropdown<T>(List<string> excludeUuids = null, string packageDir = null) where T : MetaTableOverview
+        {
+            var ret = new ValueDropdownList<string>();
+            var overviews = AssetDatabaseUtility.FindAsset<T>(packageDir);
+            foreach (var overview in overviews)
+            {
+                foreach (var row in overview.BaseRows)
+                {
+                    bool flag = excludeUuids == null ? true : !excludeUuids.Contains(row.Uuid) ? true : false;
+                    if (flag)
+                    {
+                        ret.Add($"{row.UuidShort}-{row.Name}", row.Uuid);
+                    }
+                }
+            }
+            return ret;
+        }
+
+
+        public static R GetUnityRowByUuid<T, R>(string uuid, string packageDir = null) where T : MetaTableOverview where R : MetaTableUnityRow
+        {
+            var overviews = AssetDatabaseUtility.FindAsset<T>(packageDir);
+            foreach (var overview in overviews)
+            {
+
+                foreach (var row in overview.UnityBaseRows)
+                {
+                    if (row.Uuid.Equals(uuid))
+                    {
+                        return row as R;
+                    }
+
+                }
+            }
+            return null;
+        }
+
+
 
 
         public T AddRow<T>(MetaTableUnityRow unityRow = null) where T : MetaTableUnityRow
