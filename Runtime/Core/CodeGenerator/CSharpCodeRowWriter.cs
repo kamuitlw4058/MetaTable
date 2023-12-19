@@ -11,10 +11,16 @@ namespace MetaTable
     {
         List<MetaTableColumn> m_Columns;
 
-        public CSharpCodeRowWriter(List<string> headers, List<MetaTableColumn> columns)
+        bool m_WithInterface;
+
+        string m_InterfaceName;
+
+        public CSharpCodeRowWriter(List<string> headers, List<MetaTableColumn> columns, bool withInterface, string interfaceName)
         {
             m_Columns = columns;
             m_Headers = headers;
+            m_WithInterface = withInterface;
+            m_InterfaceName = interfaceName;
         }
 
         public override void WriteMainClassStart(IJsonClassGeneratorConfig config, TextWriter sw)
@@ -23,7 +29,15 @@ namespace MetaTable
             sw.WriteLine("namespace {0}", config.Namespace);
             sw.WriteLine("{");
             sw.WriteLine("    [Serializable]");
-            sw.WriteLine("    {0} partial class {1} : {2}", "public", JsonClassGenerator.ToTitleCase(config.MainClass), config.BaseClass);
+            if (m_WithInterface)
+            {
+                sw.WriteLine("    {0} partial class {1} : {2},{3}", "public", JsonClassGenerator.ToTitleCase(config.MainClass), config.BaseClass, m_InterfaceName);
+            }
+            else
+            {
+                sw.WriteLine("    {0} partial class {1} : {2}", "public", JsonClassGenerator.ToTitleCase(config.MainClass), config.BaseClass);
+
+            }
             sw.WriteLine("    {");
         }
 
@@ -82,6 +96,13 @@ namespace MetaTable
                         field.MemberName);
                 else
                     sw.WriteLine(prefix + "public {0} {1} ;", field.Type.GetTypeName(), field.MemberName);
+
+                if (m_WithInterface)
+                {
+                    sw.WriteLine();
+                    sw.WriteLine(prefix + $"{GetTypeFromExample(field.GetExamplesText())} {m_InterfaceName}.{field.MemberName} " + "{get => " + field.MemberName + "; set => " + $"{field.MemberName} = value" + ";}");
+                }
+
             }
         }
     }

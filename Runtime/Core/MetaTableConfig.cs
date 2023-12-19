@@ -32,9 +32,13 @@ namespace MetaTable
         [LabelText("运行时目录")]
         public string ScriptDir = "Runtime";
 
+        [LabelText("接口目录")]
+
+        public string InterfaceDir = "Interface";
 
         [LabelText("编辑器目录")]
         public string EditorDir = "Editor";
+
 
         [LabelText("资源包目录")]
         public string StreamResDir = "StreamRes";

@@ -52,6 +52,14 @@ namespace MetaTable
             }
         }
 
+        public string ScriptInterfaceDir
+        {
+            get
+            {
+                return Path.Join(ScriptMetaDir, InterfaceDir).PathReplace();
+            }
+        }
+
 
         [ShowInInspector]
         public string StreamResMetaDir

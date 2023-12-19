@@ -56,6 +56,12 @@ namespace MetaTable
         [ShowIf("MetaTableType", MetaTableTypeEnum.Define)]
         public string TableName;
 
+        [VerticalGroup("基本信息")]
+        [LabelText("生成接口")]
+        // [TableColumnWidth(240, resizable: false)]
+        [ShowIf("MetaTableType", MetaTableTypeEnum.Define)]
+        public bool IsGenerateInterface;
+
         [VerticalGroup("内容编辑")]
         [LabelText("引用配置")]
         [ShowIf("MetaTableType", MetaTableTypeEnum.Reference)]
@@ -202,7 +208,14 @@ namespace MetaTable
             {
                 return;
             }
-            GenerateRow(classGenerateDir, rowName, rowJson, classBaseName);
+
+            var interfaceRowName = $"I{classBaseName}Row";
+            if (IsGenerateInterface)
+            {
+                GenerateInterface(classGenerateDir, interfaceRowName, rowJson, classBaseName);
+            }
+
+            GenerateRow(classGenerateDir, rowName, rowJson, classBaseName, interfaceRowName);
 
             var codeTableName = $"{classBaseName}Table";
             GeneratorTable(codeTableName, classGenerateDir, rowName, classBaseName);
@@ -224,13 +237,14 @@ namespace MetaTable
 
             GeneratorOverviewWrapper(classBaseName, codeOverviewName, unityRowName);
 
+
             AssetDatabase.Refresh();
         }
-        public void GenerateRow(string classGenerateDir, string rowName, string rowJson, string baseName)
+        public void GenerateRow(string classGenerateDir, string rowName, string rowJson, string baseName, string interfaceRowName)
         {
             //Generator
             var codeRowPath = Path.Join(classGenerateDir, $"{rowName}.cs");
-            JsonClassGenerator.GeneratorCodeString(rowJson, Namespace, new CSharpCodeRowWriter(Config.UsingNamespace, Columns), rowName, codeRowPath, baseClass: "MetaTableRow", baseFields: new string[] { "Uuid", "Name" });
+            JsonClassGenerator.GeneratorCodeString(rowJson, Namespace, new CSharpCodeRowWriter(Config.UsingNamespace, Columns, IsGenerateInterface, interfaceRowName), rowName, codeRowPath, baseClass: "MetaTableRow", baseFields: new string[] { "Uuid", "Name" });
 
             // Custom Code
             var classCustomDir = Path.Join(Config.ScriptCustomDir, baseName);
@@ -241,6 +255,15 @@ namespace MetaTable
                 JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace), rowName, codeRowCustomPath, isSerializable: false, isWriteFileHeader: false);
             }
         }
+
+        public void GenerateInterface(string classGenerateDir, string interfaceRowName, string rowJson, string baseName)
+        {
+            DirectoryUtility.ExistsOrCreate(classGenerateDir);
+            var codeRowPath = Path.Join(classGenerateDir, $"{interfaceRowName}.cs");
+
+            JsonClassGenerator.GeneratorCodeString(rowJson, Namespace, new CSharpCodeInterfaceWriter(Config.UsingNamespace, Columns), interfaceRowName, codeRowPath, baseClass: "IMetaTableRow", baseFields: new string[] { "Uuid", "Name" });
+        }
+
 
 
 

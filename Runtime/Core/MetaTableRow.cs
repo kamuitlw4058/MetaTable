@@ -3,7 +3,7 @@ using LitJson;
 
 namespace MetaTable
 {
-    public abstract class MetaTableRow
+    public abstract class MetaTableRow : IMetaTableRow
     {
         // [TableTitleGroup("UUID")]
         // [HideLabel]
@@ -28,7 +28,8 @@ namespace MetaTable
             }
         }
 
-
+        string IMetaTableRow.Uuid { get => Uuid; set => Uuid = value; }
+        string IMetaTableRow.Name { get => Name; set => Name = value; }
     }
 
 }
