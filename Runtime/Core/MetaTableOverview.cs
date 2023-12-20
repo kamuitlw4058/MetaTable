@@ -97,7 +97,7 @@ namespace MetaTable
             }
             foreach (var unityRow in UnityBaseRows)
             {
-                if (name.Equals(unityRow.Name))
+                if (uuid.Equals(unityRow.Uuid))
                 {
                     return unityRow.BaseRow;
                 }
@@ -129,7 +129,7 @@ namespace MetaTable
             }
             foreach (var unityRow in UnityBaseRows)
             {
-                if (name.Equals(unityRow.Name))
+                if (uuid.Equals(unityRow.Uuid))
                 {
                     return unityRow;
                 }
@@ -149,13 +149,18 @@ namespace MetaTable
 
 
 #if UNITY_EDITOR
-        public abstract void RemoveRow(string uuid);
+        // public abstract void RemoveRow(string uuid);
+
+        public abstract void RemoveByUuid(string uuid);
 
         public abstract void AddRow(MetaTableUnityRow unityRow);
 
         public abstract void AddBaseRow(MetaTableRow row);
 
         public abstract void UpdateRow(string uuid, MetaTableRow row);
+
+
+
 
 
 
@@ -230,7 +235,7 @@ namespace MetaTable
             return ret;
         }
 
-        public abstract void RemoveByUuid(string uuid);
+
 
 
 #endif

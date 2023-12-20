@@ -19,7 +19,7 @@ using Object = UnityEngine.Object;
 namespace MetaTable
 {
     [Serializable]
-    public abstract partial class MetaTableBase
+    public abstract partial class MetaTableBase : IMetaTableBase
     {
         public int Priority = 0;
 
@@ -27,13 +27,15 @@ namespace MetaTable
 
 
         [ShowInInspector]
-        public Dictionary<string, MetaTableRow> Dict = new Dictionary<string, MetaTableRow>();
+        public Dictionary<string, IMetaTableRow> Dict = new Dictionary<string, IMetaTableRow>();
 
 
-        public IReadOnlyList<MetaTableRow> BaseRows => Dict.Values.ToList();
+        public IReadOnlyList<IMetaTableRow> BaseRows => Dict.Values.ToList();
+
+        Dictionary<string, IMetaTableRow> IMetaTableBase.Dict { get => Dict; set => Dict = value; }
 
 
-        public void AddRows(IReadOnlyList<MetaTableRow> rows)
+        public void AddRows(IReadOnlyList<IMetaTableRow> rows)
         {
             rows.ForEach((o) =>
             {
@@ -53,7 +55,7 @@ namespace MetaTable
         }
 
 
-        public void MergeRows(IReadOnlyList<MetaTableRow> rows)
+        public void MergeRows(IReadOnlyList<IMetaTableRow> rows)
         {
             for (int i = 0; i < rows.Count; i++)
             {
@@ -64,14 +66,28 @@ namespace MetaTable
             }
         }
 
-        public T GetRowByUuid<T>(string uuid) where T : MetaTableRow
+        public T GetRowByUuid<T>(string uuid) where T : class, IMetaTableRow
         {
-            if (Dict.TryGetValue(uuid, out MetaTableRow row))
+            if (Dict.TryGetValue(uuid, out IMetaTableRow row))
             {
                 return row as T;
             }
             return null;
         }
+
+        public T GetRowById<T>(int id) where T : class, IMetaTableRow
+        {
+            var Values = Dict.Values.ToArray();
+            for (int i = 0; i < Dict.Count; i++)
+            {
+                if (Values[i].Id == id)
+                {
+                    return Values[i] as T;
+                }
+            }
+            return null;
+        }
+
 
     }
 

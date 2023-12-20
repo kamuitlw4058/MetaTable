@@ -56,11 +56,11 @@ namespace MetaTable
         [ShowIf("MetaTableType", MetaTableTypeEnum.Define)]
         public string TableName;
 
-        [VerticalGroup("基本信息")]
-        [LabelText("生成接口")]
-        // [TableColumnWidth(240, resizable: false)]
-        [ShowIf("MetaTableType", MetaTableTypeEnum.Define)]
-        public bool IsGenerateInterface;
+        // [VerticalGroup("基本信息")]
+        // [LabelText("生成接口")]
+        // // [TableColumnWidth(240, resizable: false)]
+        // [ShowIf("MetaTableType", MetaTableTypeEnum.Define)]
+        // public bool IsGenerateInterface;
 
         [VerticalGroup("内容编辑")]
         [LabelText("引用配置")]
@@ -210,10 +210,8 @@ namespace MetaTable
             }
 
             var interfaceRowName = $"I{classBaseName}Row";
-            if (IsGenerateInterface)
-            {
-                GenerateInterface(classGenerateDir, interfaceRowName, rowJson, classBaseName);
-            }
+
+            GenerateRowInterface(classGenerateDir, interfaceRowName, rowJson, classBaseName);
 
             GenerateRow(classGenerateDir, rowName, rowJson, classBaseName, interfaceRowName);
 
@@ -244,7 +242,7 @@ namespace MetaTable
         {
             //Generator
             var codeRowPath = Path.Join(classGenerateDir, $"{rowName}.cs");
-            JsonClassGenerator.GeneratorCodeString(rowJson, Namespace, new CSharpCodeRowWriter(Config.UsingNamespace, Columns, IsGenerateInterface, interfaceRowName), rowName, codeRowPath, baseClass: "MetaTableRow", baseFields: new string[] { "Uuid", "Name" });
+            JsonClassGenerator.GeneratorCodeString(rowJson, Namespace, new CSharpCodeRowWriter(Config.UsingNamespace, Columns, interfaceRowName), rowName, codeRowPath, baseClass: "MetaTableRow", baseFields: new string[] { "Uuid", "Name", "Id" });
 
             // Custom Code
             var classCustomDir = Path.Join(Config.ScriptCustomDir, baseName);
@@ -256,12 +254,12 @@ namespace MetaTable
             }
         }
 
-        public void GenerateInterface(string classGenerateDir, string interfaceRowName, string rowJson, string baseName)
+        public void GenerateRowInterface(string classGenerateDir, string interfaceRowName, string rowJson, string baseName)
         {
             DirectoryUtility.ExistsOrCreate(classGenerateDir);
             var codeRowPath = Path.Join(classGenerateDir, $"{interfaceRowName}.cs");
 
-            JsonClassGenerator.GeneratorCodeString(rowJson, Namespace, new CSharpCodeInterfaceWriter(Config.UsingNamespace, Columns), interfaceRowName, codeRowPath, baseClass: "IMetaTableRow", baseFields: new string[] { "Uuid", "Name" });
+            JsonClassGenerator.GeneratorCodeString(rowJson, Namespace, new CSharpCodeInterfaceWriter(Config.UsingNamespace, Columns), interfaceRowName, codeRowPath, baseClass: "IMetaTableRow", baseFields: new string[] { "Uuid", "Name", "Id" });
         }
 
 
@@ -357,65 +355,44 @@ namespace MetaTable
 
                 sw.WriteLine("#if UNITY_EDITOR");
 
-                if (HasId)
-                {
-
-                    // public static UnityAssetPathRow GetAssetPathById(int id, string packageDir = null)
-                    // {
-                    //     UnityAssetPathRow ret = null;
-                    //     var overviews = AssetDatabaseUtility.FindAsset<AssetPathOverview>(packageDir);
-                    //     foreach (var overview in overviews)
-                    //     {
-
-                    //         foreach (var row in overview.Rows)
-                    //         {
-                    //             if (row.Row.Id == id)
-                    //             {
-                    //                 ret = row;
-                    //             }
-
-                    //         }
-                    //     }
-                    //     return ret;
-                    // }
-
-                    sw.WriteLine();
-                    sw.WriteLine($"        public static {codeUnityRowName} GetUnityRowById(int id, string packageDir = null)");
-                    sw.WriteLine("        {");
-                    sw.WriteLine($"           var overviews = AssetDatabaseUtility.FindAsset<{codeOverviewName}>(packageDir);");
-                    sw.WriteLine($"           foreach (var overview in overviews)");
-                    sw.WriteLine("            {");
-                    sw.WriteLine($"               foreach (var row in overview.Rows)");
-                    sw.WriteLine("                {");
-                    sw.WriteLine($"                   if (row.Row.Id == id)");
-                    sw.WriteLine("                    {");
-                    sw.WriteLine($"                       return row;");
-                    sw.WriteLine("                    }");
-                    sw.WriteLine("                }");
-                    sw.WriteLine("            }");
-                    sw.WriteLine("             return null; ");
-                    sw.WriteLine("        }");
 
 
-                    sw.WriteLine();
-                    sw.WriteLine($"        public static IEnumerable GetIdDropdown(List<int> excludeIds = null, string packageDir = null)");
-                    sw.WriteLine("        {");
-                    sw.WriteLine($"           var ret = new ValueDropdownList<int>();");
-                    sw.WriteLine($"           var overviews = AssetDatabaseUtility.FindAsset<{codeOverviewName}>(packageDir);");
-                    sw.WriteLine($"           foreach (var overview in overviews)");
-                    sw.WriteLine("            {");
-                    sw.WriteLine($"               foreach (var row in overview.Rows)");
-                    sw.WriteLine("                {");
-                    sw.WriteLine($"                   bool flag = excludeIds == null ? true : !excludeIds.Contains(row.Row.Id) ? true : false;");
-                    sw.WriteLine("                    if (flag)");
-                    sw.WriteLine("                    {");
-                    sw.WriteLine("                       ret.Add($\"{row.Row.Id}-{row.Name}\", row.Row.Id);");
-                    sw.WriteLine("                    }");
-                    sw.WriteLine("                }");
-                    sw.WriteLine("            }");
-                    sw.WriteLine("            return ret;");
-                    sw.WriteLine("        }");
-                }
+                sw.WriteLine();
+                sw.WriteLine($"        public static {codeUnityRowName} GetUnityRowById(int id, string packageDir = null)");
+                sw.WriteLine("        {");
+                sw.WriteLine($"           var overviews = AssetDatabaseUtility.FindAsset<{codeOverviewName}>(packageDir);");
+                sw.WriteLine($"           foreach (var overview in overviews)");
+                sw.WriteLine("            {");
+                sw.WriteLine($"               foreach (var row in overview.Rows)");
+                sw.WriteLine("                {");
+                sw.WriteLine($"                   if (row.Row.Id == id)");
+                sw.WriteLine("                    {");
+                sw.WriteLine($"                       return row;");
+                sw.WriteLine("                    }");
+                sw.WriteLine("                }");
+                sw.WriteLine("            }");
+                sw.WriteLine("             return null; ");
+                sw.WriteLine("        }");
+
+
+                sw.WriteLine();
+                sw.WriteLine($"        public static IEnumerable GetIdDropdown(List<int> excludeIds = null, string packageDir = null)");
+                sw.WriteLine("        {");
+                sw.WriteLine($"           var ret = new ValueDropdownList<int>();");
+                sw.WriteLine($"           var overviews = AssetDatabaseUtility.FindAsset<{codeOverviewName}>(packageDir);");
+                sw.WriteLine($"           foreach (var overview in overviews)");
+                sw.WriteLine("            {");
+                sw.WriteLine($"               foreach (var row in overview.Rows)");
+                sw.WriteLine("                {");
+                sw.WriteLine($"                   bool flag = excludeIds == null ? true : !excludeIds.Contains(row.Row.Id) ? true : false;");
+                sw.WriteLine("                    if (flag)");
+                sw.WriteLine("                    {");
+                sw.WriteLine("                       ret.Add($\"{row.Row.Id}-{row.Name}\", row.Row.Id);");
+                sw.WriteLine("                    }");
+                sw.WriteLine("                }");
+                sw.WriteLine("            }");
+                sw.WriteLine("            return ret;");
+                sw.WriteLine("        }");
 
 
                 sw.WriteLine();
@@ -424,25 +401,6 @@ namespace MetaTable
                 sw.WriteLine($"           return GetUuidDropdown<{codeOverviewName}>(excludeUuids: excludeUuids, packageDir: packageDir);");
                 sw.WriteLine("        }");
 
-                //                public static IEnumerable GetStaticSceneIds(List<int> excludeIds = null, string packageDir = null)
-                // {
-                //     var ret = new ValueDropdownList<int>();
-                //     var overviews = AssetDatabaseUtility.FindAsset<StaticSceneOverview>(packageDir);
-                //     foreach (var overview in overviews)
-                //     {
-
-                //         foreach (var row in overview.Rows)
-                //         {
-                //             bool flag = excludeIds == null ? true : !excludeIds.Contains(row.Row.Id) ? true : false;
-                //             if (flag)
-                //             {
-                //                 ret.Add($"{row.Row.Id}-{row.Name}", row.Row.Id);
-                //             }
-                //         }
-                //     }
-                //     return ret;
-                // }
-
 
                 sw.WriteLine();
                 sw.WriteLine($"        public static {codeUnityRowName} GetUnityRowByUuid(string uuid, string packageDir = null)");
@@ -450,16 +408,16 @@ namespace MetaTable
                 sw.WriteLine($"           return GetUnityRowByUuid<{codeOverviewName}, {codeUnityRowName}>(uuid);");
                 sw.WriteLine("        }");
 
-                sw.WriteLine();
-                sw.WriteLine($"         public override void RemoveRow(string uuid)");
-                sw.WriteLine("        {");
-                sw.WriteLine($"           var unityRow = GetUnityRowByName(uuid) as {codeUnityRowName};");
-                sw.WriteLine("            if(unityRow != null)");
-                sw.WriteLine("            {");
-                sw.WriteLine("                 Rows.Remove(unityRow);");
-                sw.WriteLine("                 AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(unityRow));");
-                sw.WriteLine("            }");
-                sw.WriteLine("        }");
+                // sw.WriteLine();
+                // sw.WriteLine($"         public override void RemoveRow(string uuid)");
+                // sw.WriteLine("        {");
+                // sw.WriteLine($"           var unityRow = GetUnityRowByName(uuid) as {codeUnityRowName};");
+                // sw.WriteLine("            if(unityRow != null)");
+                // sw.WriteLine("            {");
+                // sw.WriteLine("                 Rows.Remove(unityRow);");
+                // sw.WriteLine("                 AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(unityRow));");
+                // sw.WriteLine("            }");
+                // sw.WriteLine("        }");
 
 
 
@@ -515,16 +473,18 @@ namespace MetaTable
                 sw.WriteLine($"           Rows = RefreshRows<{codeUnityRowName}>();");
                 sw.WriteLine("        }");
 
+
                 sw.WriteLine();
                 sw.WriteLine($"        public override void RemoveByUuid(string uuid)");
                 sw.WriteLine("        {");
-                sw.WriteLine($"           for (int i = 0; i < Rows.Count; i++)");
-                sw.WriteLine("           {");
-                sw.WriteLine("               if (Rows[i].Row.Uuid.Equals(uuid)){");
-                sw.WriteLine($"                   Rows.Remove(Rows[i]);");
-                sw.WriteLine("               }");
-                sw.WriteLine("           }");
+                sw.WriteLine($"           var unityRow = GetUnityRowByUuid(uuid) as {codeUnityRowName};");
+                sw.WriteLine("            if(unityRow != null)");
+                sw.WriteLine("            {");
+                sw.WriteLine("                 Rows.Remove(unityRow);");
+                sw.WriteLine("                 AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(unityRow));");
+                sw.WriteLine("            }");
                 sw.WriteLine("        }");
+
 
 
                 sw.WriteLine("#endif");

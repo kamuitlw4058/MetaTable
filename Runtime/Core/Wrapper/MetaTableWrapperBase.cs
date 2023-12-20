@@ -99,6 +99,22 @@ namespace MetaTable
             }
         }
 
+        [ShowInInspector]
+        [TableColumnWidth(80, resizable: false)]
+        [PropertyOrder(-2)]
+        [DelayedProperty]
+        // [InfoBox("已经有对应的Uuid", InfoMessageType.Warning, "CheckExistsUuid")]
+
+        public virtual int Id
+        {
+            get
+            {
+                // Debug.Log($"Log:{m_Row}");
+                return m_UnityRow.BaseRow.Id;
+            }
+        }
+
+
 
         [ShowInInspector]
         [PropertyOrder(-1)]

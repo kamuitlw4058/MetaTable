@@ -9,15 +9,20 @@ namespace MetaTable
         // [HideLabel]
         [ReadOnly]
         [JsonMember("Uuid")]
-        [MetaTableRowColumn("Uuid", "string", "UUID", -1)]
+        [MetaTableRowColumn("Uuid", "string", "UUID", -3)]
         public string Uuid;
 
         // [TableTitleGroup("Name")]
         // [HideLabel]
         [JsonMember("Name")]
         [LabelText("名字")]
-        [MetaTableRowColumn("Name", "string", "名字", 0)]
+        [MetaTableRowColumn("Name", "string", "名字", -2)]
         public string Name;
+
+        [JsonMember("Id")]
+        [LabelText("Id")]
+        [MetaTableRowColumn("Id", "int", "Id", -1)]
+        public int Id;
 
 
         public string UuidShort
@@ -30,6 +35,7 @@ namespace MetaTable
 
         string IMetaTableRow.Uuid { get => Uuid; set => Uuid = value; }
         string IMetaTableRow.Name { get => Name; set => Name = value; }
+        int IMetaTableRow.Id { get => Id; set => Id = value; }
     }
 
 }
