@@ -9,12 +9,15 @@ namespace MetaTable
 {
     public class CSharpCodeInterfaceWriter : CsharpCodeWriterBase
     {
-        List<MetaTableColumn> m_Columns;
+        public delegate void AdditionFunction(IJsonClassGeneratorConfig config, TextWriter sw);
 
-        public CSharpCodeInterfaceWriter(List<string> headers, List<MetaTableColumn> columns)
+
+        AdditionFunction m_AdditionFunction;
+
+        public CSharpCodeInterfaceWriter(List<string> headers, AdditionFunction additionFunction = null)
         {
-            m_Columns = columns;
             m_Headers = headers;
+            m_AdditionFunction = additionFunction;
         }
 
         public override void WriteMainClassStart(IJsonClassGeneratorConfig config, TextWriter sw)
@@ -24,20 +27,6 @@ namespace MetaTable
             sw.WriteLine("{");
             sw.WriteLine("    {0} partial interface {1} : {2}", "public", JsonClassGenerator.ToTitleCase(config.MainClass), config.BaseClass);
             sw.WriteLine("    {");
-        }
-
-
-
-        public (int, MetaTableColumn) GetColumnByName(string name)
-        {
-            foreach (var col in m_Columns)
-            {
-                if (col.Name == name)
-                {
-                    return (m_Columns.IndexOf(col), col);
-                }
-            }
-            return (-1, null);
         }
 
 
@@ -57,9 +46,6 @@ namespace MetaTable
 
 
 
-
-                var (col_index, col) = GetColumnByName(field.MemberName);
-
                 //使用模板Example值作为类型
                 //export_path不作为类型导出
                 if (config.ExamplesToType && field.Type.Type == JsonTypeEnum.String &&
@@ -73,6 +59,16 @@ namespace MetaTable
                 else
                     sw.WriteLine(prefix + "public {0} {1} {get;set;}", field.Type.GetTypeName(), field.MemberName);
             }
+        }
+
+        public override void WriteAdditionFunction(IJsonClassGeneratorConfig config, TextWriter sw)
+        {
+
+            if (m_AdditionFunction != null)
+            {
+                m_AdditionFunction.Invoke(config, sw);
+            }
+
         }
     }
 }

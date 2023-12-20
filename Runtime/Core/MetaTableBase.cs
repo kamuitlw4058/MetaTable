@@ -24,7 +24,7 @@ namespace MetaTable
         public abstract string TableName { get; }
 
 
-        public IMetaTableRow GetRowByUuid(string uuid)
+        public IMetaTableRow GetMetaTableRowByUuid(string uuid)
         {
             if (Dict.TryGetValue(uuid, out IMetaTableRow row))
             {
@@ -33,7 +33,7 @@ namespace MetaTable
             return null;
         }
 
-        public IMetaTableRow GetRowById(int id)
+        public IMetaTableRow GetMetaTableRowById(int id)
         {
             var Values = Dict.Values.ToArray();
             for (int i = 0; i < Dict.Count; i++)

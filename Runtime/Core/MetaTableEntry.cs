@@ -215,8 +215,12 @@ namespace MetaTable
 
             GenerateRow(classGenerateDir, rowName, rowJson, classBaseName, interfaceRowName);
 
+            var interfaceTableName = $"I{classBaseName}Table";
+            GenerateTableInterface(classGenerateDir, interfaceTableName, interfaceRowName, classBaseName);
+
             var codeTableName = $"{classBaseName}Table";
-            GeneratorTable(codeTableName, classGenerateDir, rowName, classBaseName);
+            GeneratorTable(codeTableName, classGenerateDir, interfaceRowName, classBaseName, interfaceTableName);
+
 
             var unityRowName = $"Unity{classBaseName}Row";
             GeneratorUnityRow(classBaseName, unityRowName, classGenerateDir, rowName);
@@ -259,13 +263,13 @@ namespace MetaTable
             DirectoryUtility.ExistsOrCreate(classGenerateDir);
             var codeRowPath = Path.Join(classGenerateDir, $"{interfaceRowName}.cs");
 
-            JsonClassGenerator.GeneratorCodeString(rowJson, Namespace, new CSharpCodeInterfaceWriter(Config.UsingNamespace, Columns), interfaceRowName, codeRowPath, baseClass: "IMetaTableRow", baseFields: new string[] { "Uuid", "Name", "Id" });
+            JsonClassGenerator.GeneratorCodeString(rowJson, Namespace, new CSharpCodeInterfaceWriter(Config.UsingNamespace), interfaceRowName, codeRowPath, baseClass: "IMetaTableRow", baseFields: new string[] { "Uuid", "Name", "Id" });
         }
 
 
 
 
-        public void GeneratorTable(string codeTableName, string classGenerateDir, string classRowName, string classBaseName)
+        public void GeneratorTable(string codeTableName, string classGenerateDir, string classRowName, string classBaseName, string interfaceTableName)
         {
             var codeTablePath = Path.Join(classGenerateDir, $"{codeTableName}.cs");
             JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace, (config, sw) =>
@@ -285,8 +289,25 @@ namespace MetaTable
                 sw.WriteLine();
                 sw.WriteLine($"        public override string TableName => \"{classBaseName}\";");
 
-            }), codeTableName, codeTablePath, baseClass: "MetaTableBase");
+            }), codeTableName, codeTablePath, baseClass: $"MetaTableBase,{interfaceTableName}");
         }
+
+        public void GenerateTableInterface(string classGenerateDir, string interfaceTableName, string interfaceRowName, string baseName)
+        {
+            DirectoryUtility.ExistsOrCreate(classGenerateDir);
+            var codeInterfaceTablePath = Path.Join(classGenerateDir, $"{interfaceTableName}.cs");
+
+            JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeInterfaceWriter(Config.UsingNamespace, (config, sw) =>
+            {
+                sw.WriteLine();
+                sw.WriteLine($"        {interfaceRowName} GetRowByUuid(string uuid);");
+
+                sw.WriteLine();
+                sw.WriteLine($"        {interfaceRowName} GetRowById(int id);");
+
+            }), interfaceTableName, codeInterfaceTablePath, baseClass: "IMetaTableBase");
+        }
+
 
 
         public void GeneratorUnityRow(string classBaseName, string codeUnityRowName, string classGenerateDir, string classRowName)
