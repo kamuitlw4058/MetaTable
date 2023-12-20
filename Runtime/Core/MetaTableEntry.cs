@@ -264,6 +264,16 @@ namespace MetaTable
             var codeRowPath = Path.Join(classGenerateDir, $"{interfaceRowName}.cs");
 
             JsonClassGenerator.GeneratorCodeString(rowJson, Namespace, new CSharpCodeInterfaceWriter(Config.UsingNamespace), interfaceRowName, codeRowPath, baseClass: "IMetaTableRow", baseFields: new string[] { "Uuid", "Name", "Id" });
+
+
+            var classCustomDir = Path.Join(Config.ScriptCustomDir, baseName);
+            DirectoryUtility.ExistsOrCreate(classCustomDir);
+
+            var codeInterfaceCustomPath = Path.Join(classCustomDir, $"{interfaceRowName}.Custom.cs");
+            if (!File.Exists(codeInterfaceCustomPath))
+            {
+                JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeInterfaceWriter(Config.UsingNamespace), interfaceRowName, codeInterfaceCustomPath, isSerializable: false, isWriteFileHeader: false);
+            }
         }
 
 

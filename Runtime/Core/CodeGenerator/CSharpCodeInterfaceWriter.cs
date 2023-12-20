@@ -25,7 +25,15 @@ namespace MetaTable
             sw.WriteLine();
             sw.WriteLine("namespace {0}", config.Namespace);
             sw.WriteLine("{");
-            sw.WriteLine("    {0} partial interface {1} : {2}", "public", JsonClassGenerator.ToTitleCase(config.MainClass), config.BaseClass);
+
+            if (config.BaseClass != null)
+            {
+                sw.WriteLine("    {0} partial interface {1} : {2}", "public", JsonClassGenerator.ToTitleCase(config.MainClass), config.BaseClass);
+            }
+            else
+            {
+                sw.WriteLine("    {0} partial interface {1} ", "public", JsonClassGenerator.ToTitleCase(config.MainClass));
+            }
             sw.WriteLine("    {");
         }
 
