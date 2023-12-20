@@ -144,12 +144,22 @@ namespace MetaTable
             }
 
         }
-        [Button("生成代码")]
+        [Button("生成代码", 30)]
         public void GenerateCode()
         {
             foreach (var entry in Entries)
             {
                 entry.GeneratorCode();
+            }
+        }
+
+        [Button("刷新数据通过Name", 30)]
+
+        public void RefreshOverviewByName()
+        {
+            foreach (var entry in Entries)
+            {
+                entry.RefreshOverviewByName();
             }
         }
 

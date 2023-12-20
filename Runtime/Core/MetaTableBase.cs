@@ -13,8 +13,6 @@ using UnityEditor;
 
 using Sirenix.OdinInspector;
 using UnityEngine;
-using System.IO;
-using Object = UnityEngine.Object;
 
 namespace MetaTable
 {
@@ -26,6 +24,30 @@ namespace MetaTable
         public abstract string TableName { get; }
 
 
+        public IMetaTableRow GetRowByUuid(string uuid)
+        {
+            if (Dict.TryGetValue(uuid, out IMetaTableRow row))
+            {
+                return row;
+            }
+            return null;
+        }
+
+        public IMetaTableRow GetRowById(int id)
+        {
+            var Values = Dict.Values.ToArray();
+            for (int i = 0; i < Dict.Count; i++)
+            {
+                if (Values[i].Id == id)
+                {
+                    return Values[i];
+                }
+            }
+            return null;
+        }
+
+
+
         [ShowInInspector]
         public Dictionary<string, IMetaTableRow> Dict = new Dictionary<string, IMetaTableRow>();
 
@@ -33,7 +55,6 @@ namespace MetaTable
         public IReadOnlyList<IMetaTableRow> BaseRows => Dict.Values.ToList();
 
         Dictionary<string, IMetaTableRow> IMetaTableBase.Dict { get => Dict; set => Dict = value; }
-
 
         public void AddRows(IReadOnlyList<IMetaTableRow> rows)
         {
@@ -66,23 +87,23 @@ namespace MetaTable
             }
         }
 
-        public T GetRowByUuid<T>(string uuid) where T : class, IMetaTableRow
+        public R GetRowByUuid<R>(string uuid) where R : class, IMetaTableRow
         {
             if (Dict.TryGetValue(uuid, out IMetaTableRow row))
             {
-                return row as T;
+                return row as R;
             }
             return null;
         }
 
-        public T GetRowById<T>(int id) where T : class, IMetaTableRow
+        public R GetRowById<R>(int id) where R : class, IMetaTableRow
         {
             var Values = Dict.Values.ToArray();
             for (int i = 0; i < Dict.Count; i++)
             {
                 if (Values[i].Id == id)
                 {
-                    return Values[i] as T;
+                    return Values[i] as R;
                 }
             }
             return null;

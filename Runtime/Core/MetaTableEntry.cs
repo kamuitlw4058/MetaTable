@@ -270,12 +270,19 @@ namespace MetaTable
             var codeTablePath = Path.Join(classGenerateDir, $"{codeTableName}.cs");
             JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace, (config, sw) =>
             {
+                sw.WriteLine();
                 sw.WriteLine($"        public {classRowName} GetRowByUuid(string uuid)");
                 sw.WriteLine("        {");
                 sw.WriteLine($"            return GetRowByUuid<{classRowName}>(uuid);");
                 sw.WriteLine("        }");
 
+                sw.WriteLine();
+                sw.WriteLine($"        public {classRowName} GetRowById(int id)");
+                sw.WriteLine("        {");
+                sw.WriteLine($"            return GetRowById<{classRowName}>(id);");
+                sw.WriteLine("        }");
 
+                sw.WriteLine();
                 sw.WriteLine($"        public override string TableName => \"{classBaseName}\";");
 
             }), codeTableName, codeTablePath, baseClass: "MetaTableBase");
@@ -642,13 +649,16 @@ namespace MetaTable
 
                     }
 
+                    EditorUtility.SetDirty(overview);
+                    AssetDatabase.SaveAssets();
+
                 }
             }
         }
 
         [Button("从Excel刷新Overview检测Name")]
         [BoxGroup("基本信息/操作")]
-        public void RefreshOverviewCheckName()
+        public void RefreshOverviewByName()
         {
             // Config.StreamResExcelDir
             if (RefConfig != null && !RefTableName.IsNullOrWhiteSpace())
@@ -707,6 +717,8 @@ namespace MetaTable
                         }
 
                     }
+                    EditorUtility.SetDirty(overview);
+                    AssetDatabase.SaveAssets();
 
                 }
             }
@@ -750,6 +762,8 @@ namespace MetaTable
                             overview.RemoveByUuid(unityRow.Uuid);
                         }
                     }
+                    EditorUtility.SetDirty(overview);
+                    AssetDatabase.SaveAssets();
                 }
             }
         }

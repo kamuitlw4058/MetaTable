@@ -8,9 +8,9 @@ namespace MetaTable
     {
         Dictionary<string, IMetaTableRow> Dict { get; set; }
 
-        T GetRowByUuid<T>(string uuid) where T : class, IMetaTableRow;
+        IMetaTableRow GetRowByUuid(string uuid);
 
-        T GetRowById<T>(int id) where T : class, IMetaTableRow;
+        IMetaTableRow GetRowById(int id);
 
     }
 
