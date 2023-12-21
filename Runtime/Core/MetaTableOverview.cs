@@ -8,6 +8,8 @@ using System.Collections;
 using UnityEngine.PlayerLoop;
 using System.Data;
 using System;
+using System.ComponentModel;
+
 
 
 
@@ -181,7 +183,7 @@ namespace MetaTable
 
 
 
-        public static IEnumerable GetUuidDropdown<T>(List<string> excludeUuids = null, string packageDir = null, List<Tuple<string, string>> AdditionalOptions = null) where T : MetaTableOverview
+        public static IEnumerable GetUuidDropdown<T>(List<string> excludeUuids = null, string packageDir = null, List<Tuple<string, string>> AdditionalOptions = null, List<string> includeUuids = null) where T : MetaTableOverview
         {
             var ret = new ValueDropdownList<string>();
             if (AdditionalOptions != null)
@@ -196,7 +198,7 @@ namespace MetaTable
             {
                 foreach (var row in overview.BaseRows)
                 {
-                    bool flag = excludeUuids == null ? true : !excludeUuids.Contains(row.Uuid) ? true : false;
+                    bool flag = includeUuids != null ? includeUuids.Contains(row.Uuid) : excludeUuids == null ? true : !excludeUuids.Contains(row.Uuid) ? true : false;
                     if (flag)
                     {
                         ret.Add($"{row.UuidShort}-{row.Name}", row.Uuid);
