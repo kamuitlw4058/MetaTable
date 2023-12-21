@@ -6,6 +6,7 @@ using UnityEngine;
 using System;
 
 using UnityEditor;
+using Sirenix.OdinInspector.Editor;
 // using Sirenix.OdinInspector.Editor;
 
 
@@ -15,6 +16,10 @@ namespace MetaTable
                         where TOverview : MetaTableOverview
                         where TRow : MetaTableUnityRow, new()
     {
+        public OdinEditorWindow OpenWindow { get; set; }
+
+        public bool ShowCreateButton { get; set; } = true;
+
 
         public override bool CanNameChange => true;
         public Action<string> AfterCreate;
@@ -47,7 +52,7 @@ namespace MetaTable
 
 
         [Button("新建")]
-        // [ShowIf("@this.ShowCreateButton")]
+        [ShowIf("@this.ShowCreateButton")]
         public virtual void Create()
         {
             if (UnityRow == null) return;

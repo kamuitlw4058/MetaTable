@@ -122,6 +122,7 @@ namespace MetaTable
         [DelayedProperty]
         // [TableTitleGroup("名字")]
         [InfoBox("已经有对应的名字", InfoMessageType.Warning, "CheckExistsName")]
+        [OnValueChanged("OnNameChanged")]
         public virtual string Name
         {
             get
@@ -132,6 +133,11 @@ namespace MetaTable
             {
                 m_UnityRow.BaseRow.Name = value;
             }
+        }
+
+        public virtual void OnNameChanged()
+        {
+
         }
 
 #if UNITY_EDITOR

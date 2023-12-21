@@ -73,6 +73,22 @@ namespace MetaTable
             }
         }
 
+        public MetaTableRow GetBaseRowById(int id)
+        {
+            if (id == 0)
+            {
+                return null;
+            }
+            foreach (var unityRow in UnityBaseRows)
+            {
+                if (id.Equals(unityRow.BaseRow.Id))
+                {
+                    return unityRow.BaseRow;
+                }
+            }
+            return null;
+        }
+
         public MetaTableRow GetBaseRowByName(string name)
         {
             if (name.IsNullOrWhiteSpace())

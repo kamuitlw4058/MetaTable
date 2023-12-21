@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 
 using MetaTable;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
 
 namespace MetaTable
 {
@@ -50,10 +51,9 @@ namespace MetaTable
 
         private static OdinEditorWindow m_CreateWindow;
 
-        [TableList(IsReadOnly = true, AlwaysExpanded = true), ShowInInspector]
-
-        [LabelText("行数据")]
         [Searchable]
+        [TableList(IsReadOnly = true, AlwaysExpanded = true), ShowInInspector]
+        [LabelText("行数据")]
         public readonly List<TTableRowWrapper> m_AllWrappers = new List<TTableRowWrapper>();
 
         private Dictionary<string, OdinMenuItem> MenuItemDict = new Dictionary<string, OdinMenuItem>();
@@ -64,12 +64,12 @@ namespace MetaTable
 
         public void InitWrappers()
         {
-            // foreach (var kv in MenuItemDict)
-            // {
-            //     Tree.MenuItems.Remove(kv.Value);
-            // }
-            // MenuItemDict.Clear();
-            // m_AllWrappers.Clear();
+            foreach (var kv in MenuItemDict)
+            {
+                Tree.MenuItems.Remove(kv.Value);
+            }
+            MenuItemDict.Clear();
+            m_AllWrappers.Clear();
             foreach (var overview in m_Overviews)
             {
 
@@ -78,6 +78,7 @@ namespace MetaTable
                     var detailWrapper = new TDetalRowRrapper();
                     detailWrapper.Overview = overview;
                     detailWrapper.UnityRow = x as TRow;
+                    detailWrapper.MenuWindow = MenuWindow;
 
                     var wrapper = new TTableRowWrapper();
                     wrapper.Overview = overview;
@@ -98,6 +99,34 @@ namespace MetaTable
                 Tree.AddMenuItemAtPath(MenuDisplayName, customMenuItem);
             }
 
+        }
+
+        public virtual bool ShowNewButton => true;
+
+
+        [Button("新建行")]
+        [ShowIf("@this.ShowNewButton")]
+        public void NewRow()
+        {
+            if (Overviews == null || Overviews.Count() == 0)
+            {
+                return;
+            }
+
+            var newTypeWrapper = new TNewRowWrapper();
+            newTypeWrapper.Overview = Overviews[0];
+            newTypeWrapper.UnityRow = ScriptableObject.CreateInstance<TRow>();
+            newTypeWrapper.UnityRow.BaseRow.Uuid = UuidUtility.GetNewUuid();
+            Debug.Log($"typeof:{newTypeWrapper.GetType()}");
+            m_CreateWindow = OdinEditorWindow.InspectObject(newTypeWrapper);
+
+            newTypeWrapper.OpenWindow = m_CreateWindow;
+            newTypeWrapper.AfterCreate = OnAfterCreate;
+        }
+
+        void OnAfterCreate(string uuid)
+        {
+            InitWrappers();
         }
 
     }
