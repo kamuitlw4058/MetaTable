@@ -434,9 +434,9 @@ namespace MetaTable
 
 
                 sw.WriteLine();
-                sw.WriteLine($"        public static IEnumerable GetUuidDropdown(List<string> excludeUuids = null, string packageDir = null)");
+                sw.WriteLine($"        public static IEnumerable GetUuidDropdown(List<string> excludeUuids = null, string packageDir = null, List<Tuple<string, string>> AdditionalOptions = null)");
                 sw.WriteLine("        {");
-                sw.WriteLine($"           return GetUuidDropdown<{codeOverviewName}>(excludeUuids: excludeUuids, packageDir: packageDir);");
+                sw.WriteLine($"           return GetUuidDropdown<{codeOverviewName}>(excludeUuids: excludeUuids, packageDir: packageDir,AdditionalOptions:AdditionalOptions);");
                 sw.WriteLine("        }");
 
 
@@ -444,6 +444,13 @@ namespace MetaTable
                 sw.WriteLine($"        public static {codeUnityRowName} GetUnityRowByUuid(string uuid, string packageDir = null)");
                 sw.WriteLine("        {");
                 sw.WriteLine($"           return GetUnityRowByUuid<{codeOverviewName}, {codeUnityRowName}>(uuid);");
+                sw.WriteLine("        }");
+
+
+                sw.WriteLine();
+                sw.WriteLine($"        public static {codeOverviewName} GetOverviewByUuid(string uuid, string packageDir = null)");
+                sw.WriteLine("        {");
+                sw.WriteLine($"           return GetOverviewByUuid<{codeOverviewName}>(uuid);");
                 sw.WriteLine("        }");
 
                 // sw.WriteLine();

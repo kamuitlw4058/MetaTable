@@ -8,6 +8,8 @@ using System.Collections;
 using UnityEngine.PlayerLoop;
 using System.Data;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
+using System;
+
 
 
 
@@ -180,9 +182,16 @@ namespace MetaTable
 
 
 
-        public static IEnumerable GetUuidDropdown<T>(List<string> excludeUuids = null, string packageDir = null) where T : MetaTableOverview
+        public static IEnumerable GetUuidDropdown<T>(List<string> excludeUuids = null, string packageDir = null, List<Tuple<string, string>> AdditionalOptions = null) where T : MetaTableOverview
         {
             var ret = new ValueDropdownList<string>();
+            if (AdditionalOptions != null)
+            {
+                foreach (var options in AdditionalOptions)
+                {
+                    ret.Add(options.Item1, options.Item2);
+                }
+            }
             var overviews = AssetDatabaseUtility.FindAsset<T>(packageDir);
             foreach (var overview in overviews)
             {
@@ -216,6 +225,25 @@ namespace MetaTable
             }
             return null;
         }
+
+        public static T GetOverviewByUuid<T>(string uuid, string packageDir = null) where T : MetaTableOverview
+        {
+            var overviews = AssetDatabaseUtility.FindAsset<T>(packageDir);
+            foreach (var overview in overviews)
+            {
+
+                foreach (var row in overview.UnityBaseRows)
+                {
+                    if (row.Uuid.Equals(uuid))
+                    {
+                        return overview;
+                    }
+
+                }
+            }
+            return null;
+        }
+
 
 
 

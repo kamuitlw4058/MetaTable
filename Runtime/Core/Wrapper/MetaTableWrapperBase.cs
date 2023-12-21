@@ -95,9 +95,19 @@ namespace MetaTable
             get
             {
                 // Debug.Log($"Log:{m_Row}");
-                return m_UnityRow.BaseRow.Uuid;
+                return m_UnityRow?.BaseRow?.Uuid;
             }
         }
+
+        public string UuidShort
+        {
+            get
+            {
+                // Debug.Log($"Log:{m_Row}");
+                return m_UnityRow?.BaseRow?.UuidShort;
+            }
+        }
+
 
         [ShowInInspector]
         [TableColumnWidth(80, resizable: false)]
