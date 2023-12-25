@@ -771,7 +771,7 @@ namespace MetaTable
 
         [Button("从Excel刷新Overview检测Name")]
         [BoxGroup("基本信息/操作")]
-        public void RefreshOverviewByName()
+        public void RefreshOverviewByName(bool onlyAdd = false)
         {
             // Config.StreamResExcelDir
             if (RefConfig != null && !RefTableName.IsNullOrWhiteSpace())
@@ -825,8 +825,11 @@ namespace MetaTable
                         }
                         else
                         {
-                            Debug.Log($"Update uuid:{overviewRow.Uuid} BaseRow:{row}");
-                            overview.UpdateRow(overviewRow.Uuid, row);
+                            if (!onlyAdd)
+                            {
+                                Debug.Log($"Update uuid:{overviewRow.Uuid} BaseRow:{row}");
+                                overview.UpdateRow(overviewRow.Uuid, row);
+                            }
                         }
 
                     }

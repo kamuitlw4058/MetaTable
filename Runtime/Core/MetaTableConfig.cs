@@ -156,11 +156,11 @@ namespace MetaTable
 
         [Button("刷新数据通过Name", 30)]
 
-        public void RefreshOverviewByName()
+        public void RefreshOverviewByName(bool onlyAdd = false)
         {
             foreach (var entry in Entries)
             {
-                entry.RefreshOverviewByName();
+                entry.RefreshOverviewByName(onlyAdd);
             }
         }
 
