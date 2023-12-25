@@ -219,7 +219,7 @@ namespace MetaTable
             GenerateTableInterface(classGenerateDir, interfaceTableName, interfaceRowName, classBaseName);
 
             var codeTableName = $"{classBaseName}Table";
-            GeneratorTable(codeTableName, classGenerateDir, interfaceRowName, classBaseName, interfaceTableName);
+            GeneratorTable(codeTableName, classGenerateDir, interfaceRowName, classBaseName, interfaceTableName, interfaceRowName);
 
 
             var unityRowName = $"Unity{classBaseName}Row";
@@ -279,22 +279,97 @@ namespace MetaTable
 
 
 
-        public void GeneratorTable(string codeTableName, string classGenerateDir, string classRowName, string classBaseName, string interfaceTableName)
+        public void GeneratorTable(string codeTableName, string classGenerateDir, string classRowName, string classBaseName, string interfaceTableName, string interfaceRowName)
         {
             var codeTablePath = Path.Join(classGenerateDir, $"{codeTableName}.cs");
             JsonClassGenerator.GeneratorCodeString("{}", Namespace, new CSharpCodeMetaTableBaseWriter(Config.UsingNamespace, (config, sw) =>
             {
                 sw.WriteLine();
-                sw.WriteLine($"        public {classRowName} GetRowByUuid(string uuid)");
-                sw.WriteLine("        {");
-                sw.WriteLine($"            return GetRowByUuid<{classRowName}>(uuid);");
-                sw.WriteLine("        }");
+                sw.WriteLine($"        public Dictionary<string, {interfaceRowName}> RowDict = new Dictionary<string, {interfaceRowName}>();");
+
 
                 sw.WriteLine();
-                sw.WriteLine($"        public {classRowName} GetRowById(int id)");
+                sw.WriteLine($"        public override IReadOnlyList<IMetaTableRow> BaseRows => RowDict.Values.ToList();");
+
+
+                sw.WriteLine();
+                sw.WriteLine($"        public override void AddRows(IReadOnlyList<IMetaTableRow> rows)");
                 sw.WriteLine("        {");
-                sw.WriteLine($"            return GetRowById<{classRowName}>(id);");
+                sw.WriteLine($"             for (int i = 0; i < rows.Count; i++)");
+                sw.WriteLine("            {");
+                sw.WriteLine($"               var o = rows[0];");
+                sw.WriteLine($"               if (o.Uuid == null)");
+                sw.WriteLine("                {");
+                sw.WriteLine($"                   Debug.LogError(\"AddRows Uuid Is Null\");");
+                sw.WriteLine($"                   return;");
+                sw.WriteLine("                }");
+
+                sw.WriteLine($"               if (RowDict.ContainsKey(o.Uuid))");
+                sw.WriteLine("                {");
+                sw.WriteLine("                   Debug.LogError($\"{GetType().Name} Uuid:{o.Uuid} Dup! Please Check\");");
+                sw.WriteLine($"                   return;");
+                sw.WriteLine("                }");
+
+                sw.WriteLine($"                   RowDict.Add(o.Uuid, o as {interfaceRowName});");
+                sw.WriteLine("            }");
                 sw.WriteLine("        }");
+
+
+                sw.WriteLine();
+                sw.WriteLine($"        public override void MergeRows(IReadOnlyList<IMetaTableRow> rows)");
+                sw.WriteLine("        {");
+                sw.WriteLine($"            for (int i = 0; i < rows.Count; i++)");
+                sw.WriteLine("            {");
+                sw.WriteLine($"                if (!RowDict.ContainsKey(rows[i].Uuid))");
+                sw.WriteLine("                {");
+                sw.WriteLine($"                    RowDict.Add(rows[i].Uuid, rows[i] as {interfaceRowName});");
+                sw.WriteLine("                }");
+                sw.WriteLine("            }");
+                sw.WriteLine("        }");
+
+
+
+                sw.WriteLine();
+                sw.WriteLine($"        public {interfaceRowName} GetRowByUuid(string uuid)");
+                sw.WriteLine("        {");
+                sw.WriteLine($"            if (RowDict.TryGetValue(uuid, out {interfaceRowName} row))");
+                sw.WriteLine("            {");
+                sw.WriteLine($"                return row;");
+                sw.WriteLine("            }");
+                sw.WriteLine($"            return null;");
+                sw.WriteLine("        }");
+
+
+
+                sw.WriteLine();
+                sw.WriteLine($"        public {interfaceRowName} GetRowById(int id)");
+                sw.WriteLine("        {");
+                sw.WriteLine($"            var Values = RowDict.Values;");
+                sw.WriteLine($"            foreach (var val in Values)");
+                sw.WriteLine("            {");
+                sw.WriteLine($"                if (val.Id == id)");
+                sw.WriteLine("                {");
+                sw.WriteLine($"                    return val;");
+                sw.WriteLine("                }");
+                sw.WriteLine("            }");
+                sw.WriteLine($"            return null;");
+                sw.WriteLine("        }");
+
+
+                sw.WriteLine();
+                sw.WriteLine($"        public override IMetaTableRow GetMetaTableRowByUuid(string uuid)");
+                sw.WriteLine("        {");
+                sw.WriteLine($"            return GetRowByUuid(uuid);");
+                sw.WriteLine("        }");
+
+
+
+                sw.WriteLine();
+                sw.WriteLine($"        public override IMetaTableRow GetMetaTableRowById(int id)");
+                sw.WriteLine("        {");
+                sw.WriteLine($"            return GetRowById(id);");
+                sw.WriteLine("        }");
+
 
                 sw.WriteLine();
                 sw.WriteLine($"        public override string TableName => \"{classBaseName}\";");

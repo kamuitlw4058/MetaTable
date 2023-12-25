@@ -6,7 +6,6 @@ namespace MetaTable
 {
     public interface IMetaTableBase
     {
-        Dictionary<string, IMetaTableRow> Dict { get; set; }
 
         IMetaTableRow GetMetaTableRowByUuid(string uuid);
 

@@ -24,90 +24,21 @@ namespace MetaTable
         public abstract string TableName { get; }
 
 
-        public IMetaTableRow GetMetaTableRowByUuid(string uuid)
-        {
-            if (Dict.TryGetValue(uuid, out IMetaTableRow row))
-            {
-                return row;
-            }
-            return null;
-        }
+        public abstract IMetaTableRow GetMetaTableRowByUuid(string uuid);
 
-        public IMetaTableRow GetMetaTableRowById(int id)
-        {
-            var Values = Dict.Values.ToArray();
-            for (int i = 0; i < Dict.Count; i++)
-            {
-                if (Values[i].Id == id)
-                {
-                    return Values[i];
-                }
-            }
-            return null;
-        }
+        public abstract IMetaTableRow GetMetaTableRowById(int id);
+
+
+        public abstract IReadOnlyList<IMetaTableRow> BaseRows { get; }
+
+
+        public abstract void AddRows(IReadOnlyList<IMetaTableRow> rows);
 
 
 
-        [ShowInInspector]
-        public Dictionary<string, IMetaTableRow> Dict = new Dictionary<string, IMetaTableRow>();
+        public abstract void MergeRows(IReadOnlyList<IMetaTableRow> rows);
 
 
-        public IReadOnlyList<IMetaTableRow> BaseRows => Dict.Values.ToList();
-
-        Dictionary<string, IMetaTableRow> IMetaTableBase.Dict { get => Dict; set => Dict = value; }
-
-        public void AddRows(IReadOnlyList<IMetaTableRow> rows)
-        {
-            rows.ForEach((o) =>
-            {
-                if (o.Uuid == null)
-                {
-                    Debug.LogError($"AddRows Uuid Is Null");
-                    return;
-                }
-
-                if (Dict.ContainsKey(o.Uuid))
-                {
-                    Debug.LogError($"{GetType().Name} Uuid:{o.Uuid} Dup! Please Check");
-                    return;
-                }
-                Dict.Add(o.Uuid, o);
-            });
-        }
-
-
-        public void MergeRows(IReadOnlyList<IMetaTableRow> rows)
-        {
-            for (int i = 0; i < rows.Count; i++)
-            {
-                if (!Dict.ContainsKey(rows[i].Uuid))
-                {
-                    Dict.Add(rows[i].Uuid, rows[i]);
-                }
-            }
-        }
-
-        public R GetRowByUuid<R>(string uuid) where R : class, IMetaTableRow
-        {
-            if (Dict.TryGetValue(uuid, out IMetaTableRow row))
-            {
-                return row as R;
-            }
-            return null;
-        }
-
-        public R GetRowById<R>(int id) where R : class, IMetaTableRow
-        {
-            var Values = Dict.Values.ToArray();
-            for (int i = 0; i < Dict.Count; i++)
-            {
-                if (Values[i].Id == id)
-                {
-                    return Values[i] as R;
-                }
-            }
-            return null;
-        }
 
 
     }

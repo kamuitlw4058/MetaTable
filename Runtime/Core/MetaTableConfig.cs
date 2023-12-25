@@ -78,6 +78,7 @@ namespace MetaTable
             "System",
             "System.IO",
             "System.Collections.Generic",
+            "System.Linq",
             "LitJson",
             "UnityEngine",
             "Sirenix.OdinInspector",
