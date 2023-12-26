@@ -297,7 +297,7 @@ namespace MetaTable
                 sw.WriteLine("        {");
                 sw.WriteLine($"             for (int i = 0; i < rows.Count; i++)");
                 sw.WriteLine("            {");
-                sw.WriteLine($"               var o = rows[0];");
+                sw.WriteLine($"               var o = rows[i];");
                 sw.WriteLine($"               if (o.Uuid == null)");
                 sw.WriteLine("                {");
                 sw.WriteLine($"                   Debug.LogError(\"AddRows Uuid Is Null\");");
