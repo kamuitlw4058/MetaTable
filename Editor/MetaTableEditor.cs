@@ -12,7 +12,7 @@ namespace MetaTable.Editor
 {
     public class MetaTableEditor : OdinMenuEditorWindow
     {
-        [MenuItem("MetaTable/表格编辑器", false, 10)]
+        // [MenuItem("MetaTable/表格编辑器", false, 10)]
         private static void OpenWindow()
         {
             var window = GetWindow<MetaTableEditor>();
