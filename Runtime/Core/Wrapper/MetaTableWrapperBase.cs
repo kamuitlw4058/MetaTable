@@ -115,12 +115,12 @@ namespace MetaTable
         [DelayedProperty]
         // [InfoBox("已经有对应的Uuid", InfoMessageType.Warning, "CheckExistsUuid")]
 
-        public virtual int? Id
+        public virtual int Id
         {
             get
             {
                 // Debug.Log($"Log:{m_Row}");
-                return m_UnityRow?.BaseRow?.Id;
+                return m_UnityRow.BaseRow.Id;
             }
         }
 
