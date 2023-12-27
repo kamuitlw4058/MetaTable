@@ -94,7 +94,7 @@ namespace MetaTable
             {
                 var itemMenuKey = wrapper.Uuid;
                 // Debug.Log($"wrapper:{wrapper}");
-                var itemDisplayName = $"{wrapper.UuidShort}-{MenuDisplayName}-{wrapper.Name}";
+                var itemDisplayName = $"{MenuDisplayName}-{wrapper.UuidShort}-{wrapper.Name}";
                 var customMenuItem = new OdinMenuItem(Tree, itemDisplayName, wrapper.DetailWrapper);
                 MenuItemDict.Add(itemMenuKey, customMenuItem);
                 Tree.AddMenuItemAtPath(MenuDisplayName, customMenuItem);
