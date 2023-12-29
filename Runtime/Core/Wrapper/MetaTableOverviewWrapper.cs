@@ -70,11 +70,13 @@ namespace MetaTable
             }
             MenuItemDict.Clear();
             m_AllWrappers.Clear();
+            List<TTableRowWrapper> tmpRows = new List<TTableRowWrapper>();
             foreach (var overview in m_Overviews)
             {
-
-                m_AllWrappers.AddRange(overview.UnityBaseRows.Select(x =>
+                tmpRows.AddRange(overview.UnityBaseRows.Select(x =>
                 {
+                    if (x == null) return null;
+
                     var detailWrapper = new TDetalRowRrapper();
                     detailWrapper.Overview = overview;
                     detailWrapper.UnityRow = x as TRow;
@@ -90,7 +92,9 @@ namespace MetaTable
                 }).ToList());
             }
 
-            foreach (var wrapper in m_AllWrappers)
+            tmpRows = tmpRows.Where(o => o != null).ToList();
+
+            foreach (var wrapper in tmpRows)
             {
                 var itemMenuKey = wrapper.Uuid;
                 // Debug.Log($"wrapper:{wrapper}");
@@ -99,6 +103,9 @@ namespace MetaTable
                 MenuItemDict.Add(itemMenuKey, customMenuItem);
                 Tree.AddMenuItemAtPath(MenuDisplayName, customMenuItem);
             }
+            m_AllWrappers.AddRange(tmpRows);
+
+
 
         }
 
