@@ -130,7 +130,12 @@ namespace MetaTable
 
             newTypeWrapper.OpenWindow = m_CreateWindow;
             newTypeWrapper.AfterCreate = OnAfterCreate;
+            OnNewRowPostprocess(newTypeWrapper);
         }
+        public virtual void OnNewRowPostprocess(TNewRowWrapper newRowWrapper)
+        {
+        }
+
 
         void OnAfterCreate(string uuid)
         {

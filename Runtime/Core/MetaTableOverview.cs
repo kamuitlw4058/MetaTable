@@ -185,6 +185,7 @@ namespace MetaTable
 
         public static IEnumerable GetUuidDropdown<T>(List<string> excludeUuids = null, string packageDir = null, List<Tuple<string, string>> AdditionalOptions = null, List<string> includeUuids = null) where T : MetaTableOverview
         {
+            Dictionary<string, IMetaTableRow> addUuids = new();
             var ret = new ValueDropdownList<string>();
             if (AdditionalOptions != null)
             {
@@ -202,9 +203,23 @@ namespace MetaTable
                     if (flag)
                     {
                         ret.Add($"{row.UuidShort}-{row.Name}", row.Uuid);
+                        addUuids.Add(row.Uuid, row);
                     }
                 }
             }
+
+
+            if (includeUuids != null)
+            {
+                foreach (var uuid in includeUuids)
+                {
+                    if (!addUuids.ContainsKey(uuid))
+                    {
+                        ret.Add($"{addUuids[uuid].UuidShort}-[未知]", uuid);
+                    }
+                }
+            }
+
             return ret;
         }
 
@@ -284,6 +299,10 @@ namespace MetaTable
 
 
 #endif
+    }
+
+    internal class Directory<T1, T2>
+    {
     }
 }
 
