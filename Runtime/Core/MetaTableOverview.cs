@@ -9,6 +9,8 @@ using UnityEngine.PlayerLoop;
 using System.Data;
 using System;
 using System.ComponentModel;
+using Pangoo.Common;
+
 
 
 
@@ -215,7 +217,7 @@ namespace MetaTable
                 {
                     if (!addUuids.ContainsKey(uuid))
                     {
-                        ret.Add($"{addUuids[uuid].UuidShort}-[未知]", uuid);
+                        ret.Add($"{uuid.ToShortUuid()}-[未知]", uuid);
                     }
                 }
             }
