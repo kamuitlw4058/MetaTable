@@ -183,9 +183,22 @@ namespace MetaTable
 
 
 
+        public static bool TupleContainsItem1(List<Tuple<string, string>> tuples, string item1)
+        {
+            if (tuples == null) return false;
+
+            foreach (var val in tuples)
+            {
+                if (val.Item1.Equals(item1))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
 
-        public static IEnumerable GetUuidDropdown<T>(List<string> excludeUuids = null, string packageDir = null, List<Tuple<string, string>> AdditionalOptions = null, List<string> includeUuids = null) where T : MetaTableOverview
+        public static IEnumerable GetUuidDropdown<T>(List<string> excludeUuids = null, string packageDir = null, List<Tuple<string, string>> AdditionalOptions = null, List<Tuple<string, string>> includeUuids = null) where T : MetaTableOverview
         {
             Dictionary<string, IMetaTableRow> addUuids = new();
             var ret = new ValueDropdownList<string>();
@@ -201,7 +214,7 @@ namespace MetaTable
             {
                 foreach (var row in overview.BaseRows)
                 {
-                    bool flag = includeUuids != null ? includeUuids.Contains(row.Uuid) : excludeUuids == null ? true : !excludeUuids.Contains(row.Uuid) ? true : false;
+                    bool flag = includeUuids != null ? TupleContainsItem1(includeUuids, row.Uuid) : excludeUuids == null ? true : !excludeUuids.Contains(row.Uuid) ? true : false;
                     if (flag)
                     {
                         ret.Add($"{row.UuidShort}-{row.Name}", row.Uuid);
@@ -215,9 +228,9 @@ namespace MetaTable
             {
                 foreach (var uuid in includeUuids)
                 {
-                    if (!addUuids.ContainsKey(uuid))
+                    if (!addUuids.ContainsKey(uuid.Item1))
                     {
-                        ret.Add($"{uuid.ToShortUuid()}-[未知]", uuid);
+                        ret.Add($"{uuid.Item1.ToShortUuid()}-[{uuid.Item2}]", uuid.Item1);
                     }
                 }
             }
