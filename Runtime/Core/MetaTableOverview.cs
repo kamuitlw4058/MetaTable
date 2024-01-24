@@ -311,7 +311,14 @@ namespace MetaTable
         }
 
 
-
+        [Button("保存配置", 30)]
+        public void SaveConfig()
+        {
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            GUIUtility.ExitGUI();
+        }
 
 #endif
     }
