@@ -23,16 +23,20 @@ namespace MetaTable
 
         public MetaTableDetailRowWrapper<TOverview, TRow> DetailWrapper { get; set; }
 
+        public virtual bool CheckName => true;
+
 
         [Button("复制")]
         [TableTitleGroup("复制")]
 
         [TableColumnWidth(60, resizable: false)]
         // [ShowIf("@this.ShowEditor")]
-        public void Copy()
+        public virtual void Copy()
         {
             var newWrapper = new TNewRowWrapper();
             newWrapper.Overview = Overview;
+            newWrapper.EnableEditOverview = true;
+            newWrapper.CheckName = CheckName;
             newWrapper.UnityRow = ScriptableObject.CreateInstance<TRow>();
             newWrapper.UnityRow.SetRow(UnityRow.CloneRow());
             newWrapper.UnityRow.BaseRow.Uuid = UuidUtility.GetNewUuid();
@@ -50,13 +54,13 @@ namespace MetaTable
             }
         }
 
+        public virtual string EditButtonText { get; set; } = "编辑";
 
-        [Button("编辑")]
+        [Button("@this.EditButtonText")]
         [TableTitleGroup("编辑")]
-
         [TableColumnWidth(60, resizable: false)]
         // [ShowIf("@this.ShowEditor")]
-        public void Edit()
+        public virtual void Edit()
         {
             MenuWindow?.TrySelectMenuItemWithObject(DetailWrapper);
         }
@@ -65,7 +69,7 @@ namespace MetaTable
         [TableTitleGroup("删除")]
 
         [TableColumnWidth(60, resizable: false)]
-        public void Remove()
+        public virtual void Remove()
         {
             if (UnityRow == null || Uuid.IsNullOrWhiteSpace()) return;
 

@@ -237,6 +237,17 @@ namespace MetaTable
 
             return ret;
         }
+        public static IEnumerable GetOverviewDropdown<T>(string packageDir = null) where T : MetaTableOverview
+        {
+            var ret = new ValueDropdownList<T>();
+            var overviews = AssetDatabaseUtility.FindAsset<T>(packageDir);
+            foreach (var overview in overviews)
+            {
+                ret.Add(overview.Namespace, overview);
+            }
+
+            return ret;
+        }
 
 
         public static R GetUnityRowByUuid<T, R>(string uuid, string packageDir = null) where T : MetaTableOverview where R : MetaTableUnityRow
@@ -274,6 +285,7 @@ namespace MetaTable
             }
             return null;
         }
+
 
 
 

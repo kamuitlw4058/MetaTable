@@ -45,6 +45,9 @@ namespace MetaTable
         }
 
 
+        public bool CheckName { get; set; } = true;
+
+
         protected override bool CheckExistsName()
         {
             return OverviewUtility.ExistsOverviewName<TOverview>(Name);
@@ -57,7 +60,7 @@ namespace MetaTable
         {
             if (UnityRow == null) return;
 
-            if (CheckExistsUuid() || CheckExistsName())
+            if (CheckExistsUuid() || (CheckName && CheckExistsName()))
             {
                 Debug.Log($"Row: id:{Uuid}  exists:{CheckExistsUuid()} name:{Name} exists:{CheckExistsName()}");
                 return;

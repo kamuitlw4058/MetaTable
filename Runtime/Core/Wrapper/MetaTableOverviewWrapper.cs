@@ -122,6 +122,7 @@ namespace MetaTable
             }
 
             var newTypeWrapper = new TNewRowWrapper();
+            newTypeWrapper.EnableEditOverview = true;
             newTypeWrapper.Overview = Overviews[0];
             newTypeWrapper.UnityRow = ScriptableObject.CreateInstance<TRow>();
             newTypeWrapper.UnityRow.BaseRow.Uuid = UuidUtility.GetNewUuid();
@@ -149,6 +150,12 @@ namespace MetaTable
         void OnAfterCreate(string uuid)
         {
             InitWrappers();
+            if (m_CreateWindow != null)
+            {
+                m_CreateWindow.Close();
+            }
+
+
         }
 
     }

@@ -1,9 +1,11 @@
 #if UNITY_EDITOR
+using System.Collections;
 using UnityEditor;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector;
 using Pangoo.Common;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace MetaTable
 {
@@ -35,6 +37,15 @@ namespace MetaTable
 
         protected TOverview m_Overview;
 
+        public bool EnableEditOverview { get; set; }
+
+        [EnableIf("EnableEditOverview")]
+        [TableColumnWidth(100, resizable: false)]
+        [TableTitleGroup("命名空间")]
+        [PropertyOrder(-4)]
+        [HideLabel]
+        [ValueDropdown("OnTOverviewDropdown")]
+        [ShowInInspector]
         public virtual TOverview Overview
         {
             get
@@ -45,6 +56,11 @@ namespace MetaTable
             {
                 m_Overview = value;
             }
+        }
+
+        public IEnumerable OnTOverviewDropdown()
+        {
+            return MetaTableOverview.GetOverviewDropdown<TOverview>();
         }
 
         protected TRow m_UnityRow;
@@ -68,20 +84,6 @@ namespace MetaTable
             }
         }
 
-
-
-        [ShowInInspector]
-        [TableColumnWidth(100, resizable: false)]
-        [TableTitleGroup("命名空间")]
-        [PropertyOrder(-4)]
-        [HideLabel]
-        public string Namespace
-        {
-            get
-            {
-                return m_Overview?.Config?.Namespace;
-            }
-        }
 
         [ShowInInspector]
         [TableColumnWidth(120, resizable: false)]
@@ -109,20 +111,20 @@ namespace MetaTable
         }
 
 
-        [ShowInInspector]
-        [TableColumnWidth(80, resizable: false)]
-        [PropertyOrder(-2)]
-        [DelayedProperty]
-        // [InfoBox("已经有对应的Uuid", InfoMessageType.Warning, "CheckExistsUuid")]
+        // [ShowInInspector]
+        // [TableColumnWidth(80, resizable: false)]
+        // [PropertyOrder(-2)]
+        // [DelayedProperty]
+        // // [InfoBox("已经有对应的Uuid", InfoMessageType.Warning, "CheckExistsUuid")]
 
-        public virtual int Id
-        {
-            get
-            {
-                // Debug.Log($"Log:{m_Row}");
-                return m_UnityRow.BaseRow.Id;
-            }
-        }
+        // public virtual int Id
+        // {
+        //     get
+        //     {
+        //         // Debug.Log($"Log:{m_Row}");
+        //         return m_UnityRow.BaseRow.Id;
+        //     }
+        // }
 
 
 
