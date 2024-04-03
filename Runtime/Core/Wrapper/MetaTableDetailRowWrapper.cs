@@ -16,6 +16,8 @@ namespace MetaTable
     {
 
         public override bool CanNameChange => true;
+
+        public IMetaTableEditor Editor { get; set; }
     }
 }
 

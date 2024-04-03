@@ -14,6 +14,8 @@ namespace MetaTable
              where TRow : MetaTableUnityRow, new()
     {
 
+        public IMetaTableEditor Editor { get; set; }
+
 
         [field: NonSerialized]
         public Action<string> OnRemove;

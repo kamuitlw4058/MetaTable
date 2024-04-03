@@ -6,17 +6,19 @@ using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 
 using MetaTable;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
 
 namespace MetaTable
 {
-    public class MetaTableOverviewWrapper<TOverview, TDetalRowRrapper, TTableRowWrapper, TNewRowWrapper, TRow>
-            where TDetalRowRrapper : MetaTableDetailRowWrapper<TOverview, TRow>, new()
+    public class MetaTableOverviewWrapper<TOverview, TDetalRowWrapper, TTableRowWrapper, TNewRowWrapper, TRow>
+            where TDetalRowWrapper : MetaTableDetailRowWrapper<TOverview, TRow>, new()
             where TTableRowWrapper : MetaTableRowWrapper<TOverview, TNewRowWrapper, TRow>, new()
             where TNewRowWrapper : MetaTableNewRowWrapper<TOverview, TRow>, new()
             where TOverview : MetaTableOverview
             where TRow : MetaTableUnityRow, new()
     {
+
+        public IMetaTableEditor Editor { get; set; }
+
         List<TOverview> m_Overviews;
 
         // [ShowInInspector]
@@ -47,12 +49,14 @@ namespace MetaTable
         }
 
 
+
         public OdinMenuTree Tree { get; set; }
 
         private static OdinEditorWindow m_CreateWindow;
 
         [Searchable]
-        [TableList(IsReadOnly = true, AlwaysExpanded = true), ShowInInspector]
+        [TableList(IsReadOnly = true, AlwaysExpanded = true, ShowPaging = true, NumberOfItemsPerPage = 25)]
+        [ShowInInspector]
         [LabelText("行数据")]
         public readonly List<TTableRowWrapper> m_AllWrappers = new List<TTableRowWrapper>();
 
@@ -77,17 +81,21 @@ namespace MetaTable
                 {
                     if (x == null) return null;
 
-                    var detailWrapper = new TDetalRowRrapper();
+                    var detailWrapper = new TDetalRowWrapper();
                     detailWrapper.Overview = overview;
                     detailWrapper.UnityRow = x as TRow;
                     detailWrapper.MenuWindow = MenuWindow;
+                    detailWrapper.Editor = Editor;
+                    Editor.SetDetailWrapper(detailWrapper.Uuid, detailWrapper);
 
                     var wrapper = new TTableRowWrapper();
                     wrapper.Overview = overview;
                     wrapper.UnityRow = x as TRow;
                     wrapper.MenuWindow = MenuWindow;
                     wrapper.DetailWrapper = detailWrapper;
-                    // wrapper.OnRemove += OnWrapperRemove;
+                    wrapper.Editor = Editor;
+                    Editor.SetRowWrapper(wrapper.Uuid, wrapper);
+
                     return wrapper;
                 }).ToList());
             }
